@@ -1,0 +1,115 @@
+/*
+=========================================================
+  Apply Plugins
+=========================================================
+ */
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE")
+    }
+}
+
+/*
+=========================================================
+Apply plugins
+=========================================================
+*/
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'antlr'
+apply plugin: 'org.springframework.boot'
+
+/*
+=========================================================
+Repo Info
+=========================================================
+*/
+group = 'csci432'
+description = 'Research image tracking'
+
+/*
+=========================================================
+  Create self contained jar
+=========================================================
+*/
+
+def artifactName = 'little-compiler'
+
+springBoot {
+    mainClass = "littleCompiler.Main"
+}
+
+task generatePom << {
+    pom {
+        project {
+            artifactId = artifactName
+            name = artifactName
+        }
+    }.writeTo("$buildDir/tmp/maven/pom.xml")
+}
+
+
+/*
+=========================================================
+    Javadocs Generation
+=========================================================
+*/
+task docs(type: Javadoc) {
+    source = sourceSets.main.allJava
+    destinationDir = file("$project.buildDir/javadocs")
+    failOnError = false
+}
+
+task docBundle(type: Tar) {
+    baseName = artifactName
+    version = project.version
+    extension = "tar.gz"
+    classifier = "javadoc"
+    destinationDir = file("$buildDir/")
+    from(project.files("$buildDir/javadocs"))
+}
+docBundle.dependsOn docs
+
+/*
+=========================================================
+   ANTLR configuration
+=========================================================
+ */
+
+generateGrammarSource {
+    arguments += []
+}
+
+/*
+=========================================================
+   Load Dependencies
+=========================================================
+*/
+
+configurations {
+    all*.exclude group: 'org.bytedeco', module: 'javacpp-presets'
+}
+
+repositories {
+    mavenCentral()
+
+}
+
+dependencies {
+    antlr "org.antlr:antlr4:4.5"
+    compile(group: "org.springframework.boot", name: "spring-boot-starter-web") {
+        exclude(module: "spring-boot-starter-tomcat")
+        exclude(group: "org.hibernate")
+    }
+    compile(group: 'org.antlr', name: 'antlr4-runtime', version: '4.6')
+    compile(group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '5.0.1')
+    compile(group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3')
+    compile(group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3')
+    testCompile(group: 'junit', name: 'junit', version: '4.12')
+    testCompile(group: 'org.mockito', name: 'mockito-core', version: '1.8.5')
+}
