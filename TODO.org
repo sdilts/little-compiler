@@ -1,6 +1,6 @@
 #+TODO: TODO IN-PROGRESS WAITING DONE
-
-* IN-PROGRESS Section 1: lexer [25%]
+Hint: look at the raw file for what still needs to be done
+* TODO Section 1: lexer [50%]
 ** DONE Read Input files
    + Program reads a file specified as an argument
 ** IN-PROGRESS Tokens Processed correctly
@@ -9,6 +9,6 @@
 ** TODO Output produced in correct format
    + Needs to match the output of the grading script
    
-** TODO "Micro" shell script produced
-   + Bash script should compile and run the compiler
-   + Argument(s) to the script are the files to be compiled
+** DONE "Micro" shell script produced
+    + Bash script should compile and run the compiler
+    + Argument(s) to the script are the files to be compiled
