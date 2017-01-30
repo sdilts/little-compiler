@@ -42,7 +42,8 @@ public class Main {
             Token token = null;
             do {
                 token = lexer.nextToken();
-                System.out.println("\t" + vocab.getSymbolicName(token.getType()) + "\t\t" + token.getText());
+                System.out.println("Token Type:" + vocab.getSymbolicName(token.getType()));
+		System.out.println("Value:" + token.getText());
             } while (token.getType() != Token.EOF);
         } catch (IOException e) {
             System.out.println("File not found: " + e.getMessage());
