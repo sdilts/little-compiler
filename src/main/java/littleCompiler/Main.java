@@ -17,7 +17,7 @@ public class Main {
             for (int i = 0; i < args.length; i++) {
                 File f = new File(args[i]);
                 if (f.exists() && f.isFile()) {
-                    System.out.printf("Compiling File %s\n", f.getName());
+                    //System.out.printf("Compiling File %s\n", f.getName());
                     produceTokenStream(f);
                 } else {
                     System.out.printf("Filename %s is not a valid little file. Quiting.", args[i]);
@@ -39,12 +39,13 @@ public class Main {
 
             Vocabulary vocab = lexer.getVocabulary();
 
-            Token token = null;
-            do {
-                token = lexer.nextToken();
+            //Token token = null;
+	    Token token = lexer.nextToken();
+            while (token.getType() != Token.EOF) {
                 System.out.println("Token Type: " + vocab.getSymbolicName(token.getType()));
 		System.out.println("Value: " + token.getText());
-            } while (token.getType() != Token.EOF);
+		token = lexer.nextToken();
+            } 
         } catch (IOException e) {
             System.out.println("File not found: " + e.getMessage());
         }
