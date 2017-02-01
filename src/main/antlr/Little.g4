@@ -1,3 +1,5 @@
+// -*- mode: antlr; -*-
+
 grammar Little;
 options {
     //generate java code:
