@@ -6,10 +6,14 @@ options {
     language = Java;
 }
 @header {
-    package antlr.main;
+    
+package antlr.main;
+
 }
 
 everything : .*?;
+
+FLOATLITERAL : ('0'..'9')* '.' ('0'..'9')+;
 
 INTLITERAL : [0-9]+;
 
@@ -18,11 +22,9 @@ KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' | 'FUNCTION' | 'READ' | 'WRITE' | 'IF' | '
 
 OPERATOR : (':=' | '+' | '-' | '*'  | '/' | '=' | '!=' | '<' | '>' | '(' | ')' | ';' | ',' | '<=' | '>=');
 
-FLOATLITERAL : (('0'..'9')+ '.' ('0'..'9')) | ('.' ('0'..'9') ) ;
-
 STRINGLITERAL : '"' ~('"')*? '"' ;
 
 IDENTIFIER : (('a'..'z') | ('A'..'Z')) (('a'..'z') | ('A'..'Z') | ('0'..'9'))*;
 
-Comment : '--'.*? -> skip;
+Comment : '--' ~( '\r' | '\n' )* -> skip;
 WS : [ \t\r\n]+ -> skip;
