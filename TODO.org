@@ -1,12 +1,12 @@
 #+TODO: TODO IN-PROGRESS WAITING DONE
 Hint: look at the raw file for what still needs to be done
-* TODO Section 1: lexer [50%]
+* DONE Section 1: lexer [100%]
 ** DONE Read Input files
    + Program reads a file specified as an argument
-** IN-PROGRESS Tokens Processed correctly
+** DONE Tokens Processed correctly
    + Needs to be tested: appears to be working
    + Find the grading scrip to test
-** TODO Output produced in correct format
+** DONE Output produced in correct format
    + Needs to match the output of the grading script
    
 ** DONE "Micro" shell script produced
