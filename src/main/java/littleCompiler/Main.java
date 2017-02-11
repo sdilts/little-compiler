@@ -29,6 +29,7 @@ public class Main {
         }
     }
 
+
     private static void produceTokenStream(File file) {
         try {
             FileInputStream fStream = new FileInputStream(file);
@@ -36,16 +37,17 @@ public class Main {
             //ANTLRInputStream stream = new ANTLRInputStream(System.in);
 
             LittleLexer lexer = new LittleLexer(stream);
+	    
+	    LittleParser parser = new LittleParser(new CommonTokenStream(lexer));
 
-            Vocabulary vocab = lexer.getVocabulary();
+	    parser.program();
 
-            //Token token = null;
-	    Token token = lexer.nextToken();
-            while (token.getType() != Token.EOF) {
-                System.out.println("Token Type: " + vocab.getSymbolicName(token.getType()));
-		System.out.println("Value: " + token.getText());
-		token = lexer.nextToken();
-            } 
+	    if(parser.getBuildParseTree()) {
+		System.out.println("Accepted");
+	    } else {
+		System.out.println("Not Accepted");
+	    }
+
         } catch (IOException e) {
             System.out.println("File not found: " + e.getMessage());
         }
