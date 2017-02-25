@@ -6,6 +6,7 @@ options {
     //generate java code:
     language = Java;
 }
+
 @header {
     
 package antlr.main;
@@ -18,11 +19,11 @@ pgm_body : decl func_declarations;
 decl : (string_decl decl) | (var_decl decl) | ;
 
 //string declarations
-string_decl : 'STRING' id ':=' str;
+string_decl : 'STRING' id ':=' str ';' ;
 str : STRINGLITERAL;
 
 // variable decaraltion
-var_decl : var_type id_list;
+var_decl : var_type id_list ';' ;
 var_type : 'FLOAT' | 'INT';
 any_type : var_type | 'VOID';
 id_list : id id_tail ;
@@ -44,11 +45,11 @@ stmt : base_stmt | if_stmt | while_stmt;
 base_stmt : assign_stmt | read_stmt | write_stmt | return_stmt;
 
 //basic statements
-assign_stmt : assign_expr;
+assign_stmt : assign_expr ';' ;
 assign_expr : id ':=' expr;
-read_stmt : 'READ' '(' id_list ')';
-write_stmt : 'WRITE' '(' id_list ')';
-return_stmt : 'RETURN' expr;
+read_stmt : 'READ' '(' id_list ')' ';';
+write_stmt : 'WRITE' '(' id_list ')' ';';
+return_stmt : 'RETURN' expr ';' ;
 
 //expresions
 expr : expr_prefix factor;

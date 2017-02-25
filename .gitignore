@@ -20,4 +20,4 @@ build/
 
 # Emacs/Unix backup files
 *~
-*#
+*#*.out

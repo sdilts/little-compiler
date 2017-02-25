@@ -2,5 +2,5 @@
 # Script to build, compile, and run the little-lang compiler
 
 # print to stderr so the grading script won't see it:
->&2 ./gradlew assemble
+./gradlew assemble > /dev/null
 java -jar ./build/libs/little-compiler.jar $@;
