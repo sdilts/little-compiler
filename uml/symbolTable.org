@@ -1,0 +1,17 @@
+#+OPTIONS: toc:nil
+
+#+BEGIN_SRC plantuml :file tree-symobol-table.png
+class SymbolEntry {
+      String type
+      String name
+}
+
+class SymbolTable {
+      SymbolTable parent
+      List<SymbolTable> children
+      HashTable<SymbolEntrie> symbols
+}
+
+SymbolEntry <- SymbolTable
+SymbolTable "*" --> SymbolTable
+#+END_SRC
