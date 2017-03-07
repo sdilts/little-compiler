@@ -1,0 +1,13 @@
+class SymbolEntry {
+      String type
+      String name
+}
+
+class SymbolTable {
+      SymbolTable parent
+      List<SymbolTable> children
+      HashTable<SymbolEntries> symbols
+}
+
+SymbolEntry <- SymbolTable
+SymbolTable -> SymbolTable
