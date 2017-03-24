@@ -12,6 +12,7 @@ public class SymbolStack {
     }
 
     public void enterScope(String name) {
+	System.out.printf("Symbol table %s\n", name);
 	stack.push(new SymbolTable(name));
     }
 
