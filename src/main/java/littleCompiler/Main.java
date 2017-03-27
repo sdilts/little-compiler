@@ -50,6 +50,8 @@ public class Main {
 	    
 	    ParserListener listener = new ParserListener(parser);
 	    (new ParseTreeWalker()).walk(listener, parser.program());
+
+	    listener.stack.prettyPrint();
 	    
 	    System.out.println("Accepted");
 

@@ -8,8 +8,8 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.*;
+
 
 public class ParserListener extends LittleBaseListener {
 
@@ -22,22 +22,52 @@ public class ParserListener extends LittleBaseListener {
     public ParserListener(Parser parser) {
 	this.parser = parser;
     }
+    @Override
+    public void enterVar_decl(LittleParser.Var_declContext ctx) {
+	String type = ctx.getChild(0).getText();
+	//System.out.println("TYPE: "+type);
+	String id = ctx.getChild(1).getChild(0).getText();
+	//System.out.println("ID: "+id);
+	try {
+	    stack.addSymbol(type, id);
+	}
+	catch(DeclarationError de) {
+	    System.out.println("DECLARATION ERROR " + de.getMessage());
+	    System.exit(1);
+	}
 
+	ParseTree curTail = ctx.getChild(1).getChild(1);
+
+	while(curTail.getChild(2) != null){
+	    id = curTail.getChild(1).getText();
+	    //System.out.println("ID: "+id);
+	    try {
+		stack.addSymbol(type, id);
+	    }
+	    catch(DeclarationError de) {
+		System.out.println("DECLARATION ERROR " + de.getMessage());
+		System.exit(1);
+	    }
+	    curTail = curTail.getChild(2);
+	}
+    }
     
-    @Override public void enterVar_type(LittleParser.Var_typeContext ctx) {
+    @Override
+    public void enterString_decl(LittleParser.String_declContext ctx) {
+	try {
+	    stack.addSymbol("STRING", ctx.getChild(1).getText(), ctx.getChild(3).getChild(0).getText());
+	}
+	catch(DeclarationError de) {
+	    System.out.println("DECLARATION ERROR " + de.getMessage());
+	    System.exit(1);
+	}
 	
     }
     
     @Override
     public void enterFunc_decl(LittleParser.Func_declContext ctx) {
-	//System.out.println(ctx.getChild(2).getChild(0).getText());
-	
-	// System.out.println(ctx.getChildCount());
-	// System.out.println("This is the context as a string: " + ctx.toString());
-	// System.out.println("This is the 0th child: " + ctx.getChild(0));
 	stack.enterScope(ctx.getChild(2).getChild(0).getText());
     }
-
     
     @Override
     public void exitFunc_decl(LittleParser.Func_declContext ctx) {
@@ -93,8 +123,4 @@ public class ParserListener extends LittleBaseListener {
     public void exitProgram(LittleParser.ProgramContext ctx) {
     	stack.exitScope();
     }
-
-
-
-
 }
