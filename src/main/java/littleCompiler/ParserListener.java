@@ -22,32 +22,21 @@ public class ParserListener extends LittleBaseListener {
     public ParserListener(Parser parser) {
 	this.parser = parser;
     }
+    
     @Override
     public void enterVar_decl(LittleParser.Var_declContext ctx) {
 	String type = ctx.getChild(0).getText();
 	//System.out.println("TYPE: "+type);
 	String id = ctx.getChild(1).getChild(0).getText();
 	//System.out.println("ID: "+id);
-	try {
-	    stack.addSymbol(type, id);
-	}
-	catch(DeclarationError de) {
-	    System.out.println("DECLARATION ERROR " + de.getMessage());
-	    System.exit(1);
-	}
+	interSymbol(type, id);
 
 	ParseTree curTail = ctx.getChild(1).getChild(1);
 
 	while(curTail.getChild(2) != null){
 	    id = curTail.getChild(1).getText();
 	    //System.out.println("ID: "+id);
-	    try {
-		stack.addSymbol(type, id);
-	    }
-	    catch(DeclarationError de) {
-		System.out.println("DECLARATION ERROR " + de.getMessage());
-		System.exit(1);
-	    }
+	    interSymbol(type, id);
 	    curTail = curTail.getChild(2);
 	}
     }
@@ -66,7 +55,33 @@ public class ParserListener extends LittleBaseListener {
     
     @Override
     public void enterFunc_decl(LittleParser.Func_declContext ctx) {
+	//enter the scope:
 	stack.enterScope(ctx.getChild(2).getChild(0).getText());
+	//examine the arguments:
+	ParseTree argList = ctx.getChild(4);
+	ParseTree firstArg = argList.getChild(0);
+	if(firstArg != null) {
+	    //inter the first argument:
+	    interSymbol(firstArg.getChild(0).getText(),firstArg.getChild(1).getText());
+	    //grab the tail:
+	    argList = argList.getChild(1);
+	    firstArg = argList.getChild(1);
+	    while(firstArg != null) {
+		interSymbol(firstArg.getChild(0).getText(),firstArg.getChild(1).getText());
+		argList = argList.getChild(2);
+		firstArg = argList.getChild(1);
+	    }
+	}
+	
+    }
+
+    private void interSymbol(String type, String name) {
+	try {
+	    stack.addSymbol(type, name);
+	} catch(DeclarationError de) {
+	    System.out.println("DECLARATION ERROR " + de.getMessage());
+	    System.exit(1);
+	}
     }
     
     @Override
@@ -80,7 +95,7 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void enterIf_stmt(LittleParser.If_stmtContext ctx) {
 	blockCounter++;
-	stack.enterScope("BLOCK" + blockCounter);
+	stack.enterScope("BLOCK " + blockCounter);
     }
 
     @Override
@@ -92,7 +107,6 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void enterWhile_stmt(LittleParser.While_stmtContext ctx) {
 	blockCounter++;
-	//stack.enterScope("while" + whileCounter);
 	stack.enterScope("BLOCK " + blockCounter);
     }
 
@@ -104,13 +118,17 @@ public class ParserListener extends LittleBaseListener {
 
     @Override
     public void enterElse_part(LittleParser.Else_partContext ctx) {
-	blockCounter++;
-	stack.enterScope("BLOCK " + blockCounter);
+	if(ctx.getChild(0) != null) {
+	    blockCounter++;
+	    stack.enterScope("BLOCK " + blockCounter);
+	}
     }
     
     @Override
     public void exitElse_part(LittleParser.Else_partContext ctx) {
-	stack.exitScope();
+	if(ctx.getChild(0) != null) {
+	    stack.exitScope();
+	}
     }
 
     @Override
