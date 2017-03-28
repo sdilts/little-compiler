@@ -1,6 +1,15 @@
-#!/bin/bash
+#!/bin/sh
 # Script to build, compile, and run the little-lang compiler
 
-# print to stderr so the grading script won't see it:
-./gradlew assemble > /dev/null
-java -jar ./build/libs/little-compiler.jar $@;
+# Capture all of the output to a variable to hide it, get results:
+ouput=$(./gradlew assemble)
+code=$?
+if [ $code -ne 0 ]
+   # if somthing went wrong:
+then
+    echo $output
+    exit "$code"
+    #if everthing is peachy:
+else
+    java -jar ./build/libs/little-compiler.jar $@;
+fi
