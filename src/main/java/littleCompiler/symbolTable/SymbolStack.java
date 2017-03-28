@@ -2,22 +2,24 @@ package symbolTable;
 
 import java.util.LinkedList;
 import java.util.Deque;
+import java.util.Formatter;
 
 public class SymbolStack {
 
     private Deque<SymbolTable> stack;
-    private Deque<SymbolTable> queue;
+    private Formatter printer;
     
     public SymbolStack() {
 	stack = new LinkedList<SymbolTable>();
-	queue = new LinkedList<SymbolTable>();
+	printer = new Formatter(new StringBuilder());
     }
 
     public void enterScope(String name) {
-	//System.out.printf("Symbol table %s\n", name);
-	SymbolTable t = new SymbolTable(name); 
-	stack.push(t);
-	queue.push(t);
+	if(!stack.isEmpty()) {
+	    printer.format("\n");
+	}
+	printer.format("Symbol table %s\n", name);
+	stack.push(new SymbolTable(name));
     }
 
     public boolean exitScope() {
@@ -34,19 +36,27 @@ public class SymbolStack {
     }
 
     public void addSymbol(String dataType, String symbolName, String value) throws DeclarationError {
-	if(!stack.peek().insert(symbolName, dataType, value)) {
+	if(stack.peek().insert(symbolName, dataType, value)) {
+	    printer.format("name %s type %s value %s\n", symbolName, dataType, value);
+	} else {
 	    throw new DeclarationError(symbolName);
 	}
     }
 
     public void addSymbol(String dataType, String symbolName) throws DeclarationError {
-	if(!stack.peek().insert(symbolName, dataType)) {
+	if(stack.peek().insert(symbolName, dataType)) {
+	    printer.format("name %s type %s\n", symbolName, dataType);
+	} else {
 	    throw new DeclarationError(symbolName);
 	}
     }
 
-    public void prettyPrint(){
-	for(SymbolTable symbolTable : queue){
+    public void prettyPrint() {
+	System.out.print(printer.out());
+    }
+    
+    public void fullPrint(){
+	for(SymbolTable symbolTable : stack){
 	    symbolTable.prettyPrint();
 	}
     }
