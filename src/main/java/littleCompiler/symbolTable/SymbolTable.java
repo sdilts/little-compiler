@@ -26,7 +26,7 @@ public class SymbolTable {
 
     public boolean insert(String name, String dataType, String value) {
 	if(!isDefined(name)) {
-	    table.put(name, new StringTableEntry(name, dataType, value));
+	    table.put(name, new ConstTableEntry(name, dataType, value));
 	    return true;
 	} else return false;
     }
@@ -56,10 +56,10 @@ public class SymbolTable {
 	}
     }
 
-    public static class StringTableEntry extends TableEntry {
+    public static class ConstTableEntry extends TableEntry {
 	public String value;
 
-	public StringTableEntry(String name, String dataType, String value) {
+	public ConstTableEntry(String name, String dataType, String value) {
 	    super(name, dataType);
 	    this.value = value;
 	}
