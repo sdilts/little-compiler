@@ -31,6 +31,7 @@ public class Main {
             }
         } else {
             System.out.println("You must give one or more input files. Exiting");
+	    System.exit(2);
         }
     }
 

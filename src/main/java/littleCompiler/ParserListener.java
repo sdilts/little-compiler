@@ -26,7 +26,7 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void enterVar_decl(LittleParser.Var_declContext ctx) {
 	String type = ctx.getChild(0).getText();
-	//System.out.println("TYPE: "+type);
+	//System.out.println("TYPE: +t"ype);
 	String id = ctx.getChild(1).getChild(0).getText();
 	//System.out.println("ID: "+id);
 	interSymbol(type, id);
@@ -44,7 +44,7 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void enterString_decl(LittleParser.String_declContext ctx) {
 	try {
-	    stack.addSymbol("STRING", ctx.getChild(1).getText(), ctx.getChild(3).getChild(0).getText());
+	    stack.addSymbol(ctx.getChild(1).getText(), ctx.getChild(3).getChild(0).getText());
 	}
 	catch(DeclarationError de) {
 	    System.out.println("DECLARATION ERROR " + de.getMessage());
@@ -61,7 +61,7 @@ public class ParserListener extends LittleBaseListener {
 	ParseTree argList = ctx.getChild(4);
 	ParseTree firstArg = argList.getChild(0);
 	if(firstArg != null) {
-	    //inter the first argument:
+	    //intern the first argument:
 	    interSymbol(firstArg.getChild(0).getText(),firstArg.getChild(1).getText());
 	    //grab the tail:
 	    argList = argList.getChild(1);
@@ -75,6 +75,7 @@ public class ParserListener extends LittleBaseListener {
 	
     }
 
+    //A rather morbid function name:
     private void interSymbol(String type, String name) {
 	try {
 	    stack.addSymbol(type, name);
