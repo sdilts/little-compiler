@@ -19,5 +19,7 @@ hs_err_pid*
 build/
 
 # Emacs/Unix backup files
+.emacs.desktop
 *~
-*#*.out
+\#*.out
+\#*#
