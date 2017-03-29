@@ -1,0 +1,43 @@
+@startuml
+class SymbolStack {
+      Dequeue<Symboltable> stack
+      Formatter printer
+      SymbolStack()
+      void enterScope(String name)
+      boolean exitScope(String name)
+      boolean isDefined(String symbolName)
+      void addSymbol(String dataType, String symbolName, String value) throws DeclarationError
+      void addSymbol(String dataType, String symbolName) throws DeclarationError
+      void prettyPrint()
+      void fullPrint()
+}
+
+class SymbolTable {
+      String name
+      Map<String,TableEntry> table
+      SymbolTable(String name)
+      boolean isDefined(String name)
+      boolean insert(String name, String dataType)
+      String getName()
+      void prettyPrint()
+}
+
+class TableEntry {
+      String name
+      String dataType
+      TableEntry(String name, String dataType)
+      void prettyPrint()
+}
+
+class ConstTableEntry {
+      String value
+      ConstTableEntry(String name, String dataType, String value)
+}
+
+
+
+SymbolStack -right--> SymbolTable
+TableEntry <|-- ConstTableEntry
+SymbolTable +-- TableEntry
+/' SymbolTable +-- ConstTableEntry '/
+@enduml
