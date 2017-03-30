@@ -18,6 +18,7 @@ class SymbolTable {
       SymbolTable(String name)
       boolean isDefined(String name)
       boolean insert(String name, String dataType)
+      boolean insert(String name, String dataType, String value)
       String getName()
       void prettyPrint()
 }
