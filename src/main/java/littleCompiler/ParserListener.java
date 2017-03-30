@@ -44,7 +44,7 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void enterString_decl(LittleParser.String_declContext ctx) {
 	try {
-	    stack.addSymbol(ctx.getChild(1).getText(), ctx.getChild(3).getChild(0).getText());
+	    stack.addSymbol("STRING", ctx.getChild(1).getText(), ctx.getChild(3).getChild(0).getText());
 	}
 	catch(DeclarationError de) {
 	    System.out.println("DECLARATION ERROR " + de.getMessage());
