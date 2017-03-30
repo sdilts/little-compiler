@@ -1,5 +1,7 @@
 package littleCompiler;
+
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
 import antlr.main.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
@@ -8,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import symbolTable.*;
 
 /**
  * Created by stuart on 1/25/17.
@@ -28,6 +31,7 @@ public class Main {
             }
         } else {
             System.out.println("You must give one or more input files. Exiting");
+	    System.exit(2);
         }
     }
 
@@ -40,13 +44,15 @@ public class Main {
             LittleLexer lexer = new LittleLexer(stream);
 
 	    
-	    
 	    LittleParser parser = new LittleParser(new CommonTokenStream(lexer));
 
 	    parser.removeErrorListeners();
 	    parser.addErrorListener(ThrowingErrorListener.INSTANCE);
-	    parser.program();
-	    System.out.println("Accepted");
+	    
+	    ParserListener listener = new ParserListener(parser);
+	    (new ParseTreeWalker()).walk(listener, parser.program());
+
+	    listener.stack.prettyPrint();
 
         } catch(ParseCancellationException e){
 	    System.out.println("Not accepted");

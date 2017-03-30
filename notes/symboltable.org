@@ -1,6 +1,7 @@
 * When to create new symbol tables:
   + when the program starts
   + enter a function
+
   + Enter a block (BEGIN)
     - WHILE, IF, ELSE
     - Pretty much any begin statement
