@@ -35,6 +35,15 @@ public class SymbolStack {
 	return false;
     }
 
+    public String getLocation(String varName) throws OutOfScopeException {
+	for(SymbolTable s : stack) {
+	    if(s.isDefined(varName)) {
+		return s.getSymbolLocation(varName);
+	    }
+	}
+	throw new OutOfScopeException(varName);
+    }
+    
     public void addSymbol(String dataType, String symbolName, String value) throws DeclarationError {
 	if(stack.peek().insert(symbolName, dataType, value)) {
 	    printer.format("name %s type %s value %s\n", symbolName, dataType, value);

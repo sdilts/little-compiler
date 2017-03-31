@@ -7,6 +7,7 @@ public class SymbolTable {
 
     String name;
     Map<String,TableEntry> table;
+    private static int registerCounter = 1;
     
     public SymbolTable(String name) {
 	this.name = name;
@@ -15,6 +16,16 @@ public class SymbolTable {
     
     public boolean isDefined(String name) {
 	return table.containsKey(name);
+    }
+
+    public String getSymbolLocation(String varName) {
+	if(isDefined(varName)) {
+
+	    return table.get(varName).getLocation();
+	} else {
+	    System.err.println("Something Went horribly wrong...");
+	    return null;
+	}
     }
 
     public boolean insert(String name, String dataType) {
@@ -45,14 +56,22 @@ public class SymbolTable {
     public static class TableEntry {
 	public String name;
 	public String dataType;
+
+	//what it is refered to in the asm code:
+	public String location;
 	
 	public TableEntry(String name, String dataType) {
 	    this.name = name;
+	    this.location = name + registerCounter;
 	    this.dataType = dataType;
 	}
 
 	public void prettyPrint(){
 	    System.out.printf("name %s type %s\n", name, dataType);
+	}
+
+	public String getLocation() {
+	    return this.location;
 	}
     }
 
