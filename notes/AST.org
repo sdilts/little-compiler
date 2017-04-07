@@ -1,0 +1,86 @@
+* AST for only math stuff
+* AST for everything
+** General Node
+   + flatten: generate IR for the given block
+** TODO statement body
+** TODO Node addition
+** TODO Node for subtraction
+** TODO General math
+** While loops
+   + Condition node
+   + Statement node
+   #+BEGIN_SRC java
+     String flatten() {
+         String code = "";
+         code += jmpLabel;
+         code += condition.flatten(endLabel);
+         code += body.flatten();
+         code += jump to jmpLabel;
+         code += endLabel
+     }
+   #+END_SRC
+   #+BEGIN_SRC asm
+     LABEL:	JNE A B END
+   	  ;; body
+   	  JMP LABEL
+     END:	
+   #+END_SRC
+** TODO functions
+** If/Else statements
+   + condition
+   # weird religion:
+   + true body
+   + false body
+   for code
+   #+BEGIN_SRC java
+     if( a == b) {
+         //do stuff
+     } else {
+         //do stuff
+     }
+   #+END_SRC
+   generate this:
+   #+BEGIN_SRC asm
+   	  JNE A B ELSE
+   	  ;; do stuff
+   	  JMP END
+     ELSE:
+   	  ;; do stuff
+     END:	
+   #+END_SRC
+   Some psuedocode:
+   #+BEGIN_SRC java
+     String flatten() {
+         String code = "";
+         code += condition.flatten(ELSE);
+         code += trueBody.flatten();
+         code += JMP END;
+         code += Else label;
+         code += falseBody.flatten();
+         code += end label;
+     }
+   #+END_SRC
+** TODO Assignment
+** Condition
+   + expr1 node
+   + expr2 node
+   + data for type of condition
+   #+BEGIN_SRC java
+     String flatten(Label) {
+         String code;
+         code += expression1.flatten(Temp1);
+         code += expression2.flatten(Temp2);
+         switch(conditionType) {
+         case "<":
+         case ">":
+   	  //etc
+         }	    
+         code += "JMP Temp1 Temp2 Label"
+     }
+   #+END_SRC
+   #+BEGIN_SRC asm
+   	  ADD A B T1
+   	  ADD C D T2
+   	  ;; We tell the expression to put the results in these registers
+   	  JMP T1 T2 LABEL
+   #+END_SRC
