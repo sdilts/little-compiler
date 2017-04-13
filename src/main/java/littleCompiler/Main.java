@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import symbolTable.*;
+import utils.*;
 
 /**
  * Created by stuart on 1/25/17.
@@ -50,8 +51,10 @@ public class Main {
 	    parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 	    
 	    ParserListener listener = new ParserListener(parser);
-	    (new ParseTreeWalker()).walk(listener, parser.program());
+	    System.out.println(TreeUtils.printTree(parser.program(), parser));
+	    //(new ParseTreeWalker()).walk(listener, parser.program());
 
+	    
 	    listener.stack.prettyPrint();
 
         } catch(ParseCancellationException e){

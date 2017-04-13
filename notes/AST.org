@@ -1,11 +1,62 @@
-* AST for only math stuff
+* Building the math stuff
+  #+BEGIN_EXAMPLE
+    if getting id or literal x
+       if(stackisEmpty) {
+  	push x
+       else if( stack not empty)
+  	t = pop stack
+  	t.addlowest(x) or t.addRightChild(x)
+  	push(t)
+
+    if getting addop x
+       create new node with x as item
+       mode.addleftchild(stack.pop())
+  #+END_EXAMPLE
+
+  #+BEGIN_EXAMPLE
+    stack of trees
+    current tree
+
+    when enter expr:
+         push current tree onto the stack
+         start working on a new tree
+
+    when exit expr:
+         r = stack.pop();
+         r.setRight(current tree);
+         current tree = r;
+  #+END_EXAMPLE
 * AST for everything
 ** General Node
    + flatten: generate IR for the given block
-** TODO statement body
-** TODO Node addition
-** TODO Node for subtraction
-** TODO General math
+** statement body
+   + list of statements
+   #+BEGIN_SRC java
+     for(Statement s : statementList) {
+         s.flatten()
+     }
+   #+END_SRC
+** General math
+   + operator
+   + MathNode op 1
+   + MathNode op 2
+   #+BEGIN_SRC java
+     String flatten(String location) {
+         String code = "";
+         String op1Val;
+         String op2Val;
+         if(op1 === valNode) {
+   	  op1Val = op1.getValue();
+         } else {
+   	  op1Val = tempRegister;
+   	  code += op1.flatten(op1Val)
+         }
+         //same for op2
+         code += op + op1Val + op2Val + location;
+         return location;
+
+     }
+   #+END_SRC
 ** While loops
    + Condition node
    + Statement node
@@ -25,7 +76,6 @@
    	  JMP LABEL
      END:	
    #+END_SRC
-** TODO functions
 ** If/Else statements
    + condition
    # weird religion:
@@ -60,7 +110,17 @@
          code += end label;
      }
    #+END_SRC
-** TODO Assignment
+** Assignment
+   A = B + C
+   + expression
+   + location
+   #+BEGIN_SRC java
+     String flatten(){
+         String code = "";
+    
+         code += expression.flatten(location);
+     }
+   #+END_SRC
 ** Condition
    + expr1 node
    + expr2 node
@@ -84,3 +144,4 @@
    	  ;; We tell the expression to put the results in these registers
    	  JMP T1 T2 LABEL
    #+END_SRC
+# ** functions
