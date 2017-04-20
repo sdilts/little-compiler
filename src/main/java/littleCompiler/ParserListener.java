@@ -1,6 +1,10 @@
 package littleCompiler;
 
 import symbolTable.*;
+import ast.*;
+
+import java.util.LinkedList;
+import java.util.Deque;
 
 import org.antlr.v4.runtime.*;
 import antlr.main.*;
@@ -13,6 +17,9 @@ import org.antlr.v4.runtime.tree.*;
 
 public class ParserListener extends LittleBaseListener {
 
+    public Deque<MathExpression> exprStack = new LinkedList<MathExpression>();
+    public MathExpression curTree;
+    
     public SymbolStack stack = new SymbolStack();
     private Parser parser;
     
@@ -72,7 +79,13 @@ public class ParserListener extends LittleBaseListener {
 		firstArg = argList.getChild(1);
 	    }
 	}
-	
+    }
+
+    private void printStack() {
+	System.out.println("the contents of the stack are:");
+	for(MathExpression e : exprStack) {
+	    System.err.println(e);
+	}
     }
 
     //A rather morbid function name:
@@ -83,6 +96,111 @@ public class ParserListener extends LittleBaseListener {
 	    System.out.println("DECLARATION ERROR " + de.getMessage());
 	    System.exit(1);
 	}
+    }
+
+
+    @Override
+    public void enterPrimary(LittleParser.PrimaryContext ctx) {
+	if(!ctx.getChild(0).getText().equals("(") ) {
+	    MathExpression temp = new MathExpression(ctx.getChild(0).getText());
+	    System.err.println("Primary: " + ctx.getChild(0).getText());
+	    System.err.println("primary");
+	    curTree.addChild(temp);
+	}
+    }
+
+    @Override
+    public void enterFactor_prefix(LittleParser.Factor_prefixContext ctx) {
+	if(ctx.getChild(2) != null) {
+	    System.err.println("Mulop: " + ctx.getChild(2).getText());
+	    MathExpression temp = new MathExpression(ctx.getChild(2).getText());
+	    if(curTree != null) {
+		System.err.println("we pushed");
+		exprStack.push(curTree);
+		printStack();
+	    }
+	    curTree = temp;
+	}
+    }
+
+
+    @Override
+    public void exitFactor_prefix(LittleParser.Factor_prefixContext ctx) {
+	// if(ctx.getChild(2) != null) {
+	//     if(!exprStack.isEmpty()) {
+	// 	MathExpression temp = exprStack.pop();
+	// 	System.err.println("exit");
+	// 	temp.addChild(curTree);
+	// 	curTree = temp;
+	// 	printStack();
+	//     }
+	// }
+	if(ctx.getChild(2) != null) {
+	    if(!exprStack.isEmpty() && curTree.isFull()) {		
+		printStack();
+		MathExpression temp = exprStack.pop();
+		temp.addChild(curTree);
+		curTree = temp;
+	    }
+	}
+    }
+
+    @Override
+    public void enterExpr_prefix(LittleParser.Expr_prefixContext ctx) {
+	if(ctx.getChild(2) != null) {
+	    System.err.println("Mulop: " + ctx.getChild(2).getText());
+	    MathExpression temp = new MathExpression(ctx.getChild(2).getText());
+	    if(curTree != null) {
+		System.err.println("we pushed");
+		exprStack.push(curTree);
+		printStack();
+	    }
+	    curTree = temp;
+	}
+    }
+
+    @Override
+    public void exitExpr_prefix(LittleParser.Expr_prefixContext ctx) {
+	if(ctx.getChild(2) != null) {
+	    if(!exprStack.isEmpty() && curTree.isFull()) {		
+		printStack();
+		MathExpression temp = exprStack.pop();
+		temp.addChild(curTree);
+		curTree = temp;
+	    }
+	}
+    }
+
+    
+    // @Override
+    // public void enterAddop(LittleParser.AddopContext ctx) {
+    // 	System.err.println("Addop: " + ctx.getText());
+    // 	MathExpression temp = new MathExpression(ctx.getText());
+    // 	temp.left = curTree;
+    // 	curTree = temp;
+    // }
+
+    // @Override
+    // public void enterExpr(LittleParser.ExprContext ctx) {
+    // 	if(curTree != null) {
+    // 	    exprStack.push(curTree);
+    // 	    curTree = null;
+    // 	}
+    // }
+
+    public void exitExpr(LittleParser.ExprContext ctx) {
+	System.err.println("exiting expr");
+	System.err.println("I'm happy");
+	if(!exprStack.isEmpty() && curTree.isFull()) {		
+	    printStack();
+	    MathExpression temp = exprStack.pop();
+	    temp.addChild(curTree);
+	    curTree = temp;
+	}
+	
+	System.out.println(curTree.isFull());
+	System.err.println(curTree);
+	
     }
     
     @Override

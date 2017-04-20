@@ -51,11 +51,11 @@ public class Main {
 	    parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 	    
 	    ParserListener listener = new ParserListener(parser);
-	    System.out.println(TreeUtils.printTree(parser.program(), parser));
-	    //(new ParseTreeWalker()).walk(listener, parser.program());
+	    //System.out.println(TreeUtils.printTree(parser.program(), parser));
+	    (new ParseTreeWalker()).walk(listener, parser.program());
 
 	    
-	    listener.stack.prettyPrint();
+	    //listener.stack.prettyPrint();
 
         } catch(ParseCancellationException e){
 	    System.out.println("Not accepted");
