@@ -21,10 +21,10 @@ public class ParserListener extends LittleBaseListener {
     public MathExpression curTree;
     
     public SymbolStack stack = new SymbolStack();
+    
     private Parser parser;
     
     public int blockCounter = 0;
-
 
     public ParserListener(Parser parser) {
 	this.parser = parser;
@@ -33,9 +33,7 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void enterVar_decl(LittleParser.Var_declContext ctx) {
 	String type = ctx.getChild(0).getText();
-	//System.out.println("TYPE: +t"ype);
 	String id = ctx.getChild(1).getChild(0).getText();
-	//System.out.println("ID: "+id);
 	interSymbol(type, id);
 
 	ParseTree curTail = ctx.getChild(1).getChild(1);
@@ -98,7 +96,6 @@ public class ParserListener extends LittleBaseListener {
 	}
     }
 
-
     @Override
     public void enterPrimary(LittleParser.PrimaryContext ctx) {
 	if(!ctx.getChild(0).getText().equals("(") ) {
@@ -118,18 +115,6 @@ public class ParserListener extends LittleBaseListener {
 	}
     }
 
-
-    @Override
-    public void exitFactor_prefix(LittleParser.Factor_prefixContext ctx) {
-	if(ctx.getChild(2) != null) {
-	    if(!exprStack.isEmpty() && curTree.isFull()) {		
-		MathExpression temp = exprStack.pop();
-		temp.addChild(curTree);
-		curTree = temp;
-	    }
-	}
-    }
-
     @Override
     public void enterExpr_prefix(LittleParser.Expr_prefixContext ctx) {
 	if(ctx.getChild(2) != null) {
@@ -141,30 +126,36 @@ public class ParserListener extends LittleBaseListener {
 	}
     }
 
-    @Override
-    public void exitExpr_prefix(LittleParser.Expr_prefixContext ctx) {
-	if(ctx.getChild(2) != null) {
-	    if(!exprStack.isEmpty() && curTree.isFull()) {
-		MathExpression temp = exprStack.pop();
-		temp.addChild(curTree);
-		curTree = temp;
-	    }
-	}
-    }
-
-    public void exitExpr(LittleParser.ExprContext ctx) {
+    public void exitMathOperator() {
 	if(!exprStack.isEmpty() && curTree.isFull()) {
 	    MathExpression temp = exprStack.pop();
 	    temp.addChild(curTree);
 	    curTree = temp;
 	}
+    }
+
+    @Override
+    public void exitFactor_prefix(LittleParser.Factor_prefixContext ctx) {
+	if(ctx.getChild(2) != null) {
+	    exitMathOperator();
+	}
+    }
+
+    @Override
+    public void exitExpr_prefix(LittleParser.Expr_prefixContext ctx) {
+	if(ctx.getChild(2) != null) {
+	    exitMathOperator();
+	}
+    }
+
+    @Override
+    public void exitExpr(LittleParser.ExprContext ctx) {
+	exitMathOperator();
 	System.err.println(curTree);
-	
     }
     
     @Override
     public void exitFunc_decl(LittleParser.Func_declContext ctx) {
-	//System.out.println(ctx.children);	
 	stack.exitScope();
     }
 
