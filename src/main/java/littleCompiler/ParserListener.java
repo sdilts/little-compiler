@@ -1,7 +1,7 @@
 package littleCompiler;
 
 import symbolTable.*;
-import ast.*;
+import littleCompiler.ast.*;
 
 import java.util.LinkedList;
 import java.util.Deque;

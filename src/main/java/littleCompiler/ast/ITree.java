@@ -1,4 +1,4 @@
-package ast;
+package littleCompiler.ast;
 
 public interface ITree {
     public void addChild(ITree child);

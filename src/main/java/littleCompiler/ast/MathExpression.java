@@ -1,4 +1,4 @@
-package ast;
+package littleCompiler.ast;
 
 public class MathExpression {
     public String terminal;
