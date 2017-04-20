@@ -1,6 +1,6 @@
 package littleCompiler.ast;
 
-public class MathExpression {
+public class MathExpression implements ITree {
     public String terminal;
     public MathExpression left;
     public MathExpression right;
@@ -9,13 +9,13 @@ public class MathExpression {
 	this.terminal = terminal;
     }
 
-    public void addChild(MathExpression child) {
+    public void addChild(Object child) {
 	if(left == null) {
-	    left = child;
+	    left = (MathExpression) child;
 	} else if (right == null) {
-	    right = child;
+	    right = (MathExpression) child;
 	} else {
-	    System.err.println("We messed up bad at" + terminal + " with child " + child.terminal);
+	    System.err.println("We messed up bad at" + terminal + " with child " + child);
 	    System.err.println(this);
 	}
     }

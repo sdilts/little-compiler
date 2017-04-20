@@ -1,7 +1,6 @@
 package littleCompiler.ast;
 
 public interface ITree {
-    public void addChild(ITree child);
+    public void addChild(Object child);
     public boolean isFull();
-    public String flatten(String action);
 }

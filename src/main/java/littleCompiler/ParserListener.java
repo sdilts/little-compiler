@@ -17,8 +17,8 @@ import org.antlr.v4.runtime.tree.*;
 
 public class ParserListener extends LittleBaseListener {
 
-    public Deque<MathExpression> exprStack = new LinkedList<MathExpression>();
-    public MathExpression curTree;
+    public Deque<ITree> exprStack = new LinkedList<ITree>();
+    public ITree curTree;
     
     public SymbolStack stack = new SymbolStack();
     
@@ -81,7 +81,7 @@ public class ParserListener extends LittleBaseListener {
 
     private void printStack() {
 	System.out.println("the contents of the stack are:");
-	for(MathExpression e : exprStack) {
+	for(ITree e : exprStack) {
 	    System.err.println(e);
 	}
     }
@@ -100,7 +100,11 @@ public class ParserListener extends LittleBaseListener {
     public void enterPrimary(LittleParser.PrimaryContext ctx) {
 	if(!ctx.getChild(0).getText().equals("(") ) {
 	    MathExpression temp = new MathExpression(ctx.getChild(0).getText());
-	    curTree.addChild(temp);
+	    if(curTree == null) {
+		curTree = temp;
+	    } else {
+		curTree.addChild(temp);
+	    }
 	}
     }
 
@@ -128,7 +132,7 @@ public class ParserListener extends LittleBaseListener {
 
     public void exitMathOperator() {
 	if(!exprStack.isEmpty() && curTree.isFull()) {
-	    MathExpression temp = exprStack.pop();
+	    ITree temp = exprStack.pop();
 	    temp.addChild(curTree);
 	    curTree = temp;
 	}
@@ -209,5 +213,6 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void exitProgram(LittleParser.ProgramContext ctx) {
     	stack.exitScope();
+	printStack();
     }
 }
