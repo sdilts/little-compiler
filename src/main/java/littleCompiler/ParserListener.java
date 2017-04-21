@@ -77,6 +77,7 @@ public class ParserListener extends LittleBaseListener {
 		firstArg = argList.getChild(1);
 	    }
 	}
+	exprStack.add(new StmtList());
     }
 
     private void printStack() {
@@ -155,7 +156,49 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void exitExpr(LittleParser.ExprContext ctx) {
 	exitMathOperator();
-	System.err.println(curTree);
+    }
+
+    @Override
+    public void exitAssign_expr(LittleParser.Assign_exprContext ctx) { 
+	Assign asn = new Assign();
+	asn.addChild(ctx.getChild(0).getText());
+	asn.addChild(curTree);
+	exprStack.push(asn);
+	curTree = null;
+    }
+
+    @Override
+    public void enterStmt_list(LittleParser.Stmt_listContext ctx) {
+	System.out.println("Entering statement");
+    }
+    
+    @Override
+    public void exitStmt_list(LittleParser.Stmt_listContext ctx) {
+	if(ctx.getChild(0) != null) {
+	    ITree lst = null;
+	    if(!(exprStack.peek() instanceof StmtList)) {
+		System.out.println("Creating new list");
+		lst = new StmtList();
+	    } else {
+		lst = exprStack.pop();
+	    }
+	    ITree expr = exprStack.pop();
+	    System.out.println("expr: " + expr);
+	    System.out.println("lst: " + lst);
+	    lst.addChild(expr);
+	    exprStack.push(lst);
+	    printStack();
+	}
+    }
+
+    @Override
+    public void enterWrite_stmt(LittleParser.Write_stmtContext ctx) {
+	exprStack.push(new StmtList());
+    }
+    
+    @Override
+    public void enterRead_stmt(LittleParser.Read_stmtContext ctx) {
+	exprStack.push(new StmtList());
     }
     
     @Override
