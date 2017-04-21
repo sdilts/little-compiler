@@ -1,7 +1,7 @@
 package littleCompiler;
 
 import symbolTable.*;
-import ast.*;
+import littleCompiler.ast.*;
 
 import java.util.LinkedList;
 import java.util.Deque;
@@ -17,8 +17,8 @@ import org.antlr.v4.runtime.tree.*;
 
 public class ParserListener extends LittleBaseListener {
 
-    public Deque<MathExpression> exprStack = new LinkedList<MathExpression>();
-    public MathExpression curTree;
+    public Deque<ITree> exprStack = new LinkedList<ITree>();
+    public ITree curTree;
     
     public SymbolStack stack = new SymbolStack();
     
@@ -77,11 +77,12 @@ public class ParserListener extends LittleBaseListener {
 		firstArg = argList.getChild(1);
 	    }
 	}
+	exprStack.add(new StmtList());
     }
 
     private void printStack() {
 	System.out.println("the contents of the stack are:");
-	for(MathExpression e : exprStack) {
+	for(ITree e : exprStack) {
 	    System.err.println(e);
 	}
     }
@@ -100,7 +101,11 @@ public class ParserListener extends LittleBaseListener {
     public void enterPrimary(LittleParser.PrimaryContext ctx) {
 	if(!ctx.getChild(0).getText().equals("(") ) {
 	    MathExpression temp = new MathExpression(ctx.getChild(0).getText());
-	    curTree.addChild(temp);
+	    if(curTree == null) {
+		curTree = temp;
+	    } else {
+		curTree.addChild(temp);
+	    }
 	}
     }
 
@@ -128,7 +133,7 @@ public class ParserListener extends LittleBaseListener {
 
     public void exitMathOperator() {
 	if(!exprStack.isEmpty() && curTree.isFull()) {
-	    MathExpression temp = exprStack.pop();
+	    ITree temp = exprStack.pop();
 	    temp.addChild(curTree);
 	    curTree = temp;
 	}
@@ -151,7 +156,49 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void exitExpr(LittleParser.ExprContext ctx) {
 	exitMathOperator();
-	System.err.println(curTree);
+    }
+
+    @Override
+    public void exitAssign_expr(LittleParser.Assign_exprContext ctx) { 
+	Assign asn = new Assign();
+	asn.addChild(ctx.getChild(0).getText());
+	asn.addChild(curTree);
+	exprStack.push(asn);
+	curTree = null;
+    }
+
+    @Override
+    public void enterStmt_list(LittleParser.Stmt_listContext ctx) {
+	System.out.println("Entering statement");
+    }
+    
+    @Override
+    public void exitStmt_list(LittleParser.Stmt_listContext ctx) {
+	if(ctx.getChild(0) != null) {
+	    ITree lst = null;
+	    if(!(exprStack.peek() instanceof StmtList)) {
+		System.out.println("Creating new list");
+		lst = new StmtList();
+	    } else {
+		lst = exprStack.pop();
+	    }
+	    ITree expr = exprStack.pop();
+	    System.out.println("expr: " + expr);
+	    System.out.println("lst: " + lst);
+	    lst.addChild(expr);
+	    exprStack.push(lst);
+	    printStack();
+	}
+    }
+
+    @Override
+    public void enterWrite_stmt(LittleParser.Write_stmtContext ctx) {
+	exprStack.push(new StmtList());
+    }
+    
+    @Override
+    public void enterRead_stmt(LittleParser.Read_stmtContext ctx) {
+	exprStack.push(new StmtList());
     }
     
     @Override
@@ -209,5 +256,6 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void exitProgram(LittleParser.ProgramContext ctx) {
     	stack.exitScope();
+	printStack();
     }
 }
