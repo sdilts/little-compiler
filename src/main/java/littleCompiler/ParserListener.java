@@ -77,14 +77,15 @@ public class ParserListener extends LittleBaseListener {
 		firstArg = argList.getChild(1);
 	    }
 	}
-	exprStack.add(new StmtList());
     }
 
     private void printStack() {
 	System.out.println("the contents of the stack are:");
 	for(ITree e : exprStack) {
-	    System.err.println(e);
+	    System.err.println("Class = " + e.getClass().toString());
+	    e.print();
 	}
+	System.out.println("Done printing stack.");
     }
 
     //A rather morbid function name:
@@ -107,6 +108,13 @@ public class ParserListener extends LittleBaseListener {
 		curTree.addChild(temp);
 	    }
 	}
+    }
+
+    @Override
+    public void exitPrimary(LittleParser.PrimaryContext ctx) {
+       if(ctx.getChild(0).getText().equals("(") ) {
+	    exitMathOperator();
+       }
     }
 
     @Override
@@ -147,6 +155,14 @@ public class ParserListener extends LittleBaseListener {
     }
 
     @Override
+    public void exitExpr(LittleParser.ExprContext ctx) {
+	if(exprStack.peek() instanceof MathExpression) {
+	    exitMathOperator();
+	}
+	
+    }
+    
+    @Override
     public void exitExpr_prefix(LittleParser.Expr_prefixContext ctx) {
 	if(ctx.getChild(2) != null) {
 	    exitMathOperator();
@@ -154,12 +170,8 @@ public class ParserListener extends LittleBaseListener {
     }
 
     @Override
-    public void exitExpr(LittleParser.ExprContext ctx) {
-	exitMathOperator();
-    }
-
-    @Override
-    public void exitAssign_expr(LittleParser.Assign_exprContext ctx) { 
+    public void exitAssign_expr(LittleParser.Assign_exprContext ctx) {
+	
 	Assign asn = new Assign();
 	asn.addChild(ctx.getChild(0).getText());
 	asn.addChild(curTree);
@@ -169,7 +181,6 @@ public class ParserListener extends LittleBaseListener {
 
     @Override
     public void enterStmt_list(LittleParser.Stmt_listContext ctx) {
-	System.out.println("Entering statement");
     }
     
     @Override
@@ -177,28 +188,22 @@ public class ParserListener extends LittleBaseListener {
 	if(ctx.getChild(0) != null) {
 	    ITree lst = null;
 	    if(!(exprStack.peek() instanceof StmtList)) {
-		System.out.println("Creating new list");
 		lst = new StmtList();
 	    } else {
 		lst = exprStack.pop();
 	    }
 	    ITree expr = exprStack.pop();
-	    System.out.println("expr: " + expr);
-	    System.out.println("lst: " + lst);
 	    lst.addChild(expr);
 	    exprStack.push(lst);
-	    printStack();
 	}
     }
 
     @Override
     public void enterWrite_stmt(LittleParser.Write_stmtContext ctx) {
-	exprStack.push(new StmtList());
     }
     
     @Override
     public void enterRead_stmt(LittleParser.Read_stmtContext ctx) {
-	exprStack.push(new StmtList());
     }
     
     @Override
