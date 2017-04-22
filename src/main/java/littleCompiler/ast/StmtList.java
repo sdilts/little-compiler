@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.Deque;
 
 public class StmtList implements ITree {
-    private Deque stmts;
+    private Deque<ITree> stmts;
 
     public StmtList() {
-	stmts = new LinkedList();
+	stmts = new <ITree>LinkedList();
     }
 
     public boolean isFull() {
@@ -15,7 +15,7 @@ public class StmtList implements ITree {
     }
 
     public void addChild(Object child) {
-	stmts.addLast(child);
+	stmts.addFirst( (ITree)child);
     }
 
     public void print() {
