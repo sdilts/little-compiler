@@ -21,7 +21,11 @@ public class MathExpression implements ITree {
     }
 
     public boolean isFull() {
-	return left != null && right != null;
+	return (left != null && right != null);
+    }
+
+    public void print() {
+	System.out.println(this);
     }
 
     @Override

@@ -17,4 +17,13 @@ public class StmtList implements ITree {
     public void addChild(Object child) {
 	stmts.addLast(child);
     }
+
+    public void print() {
+	System.out.println("This is a statement list:");
+	for(ITree t : stmts) {
+	    t.print();
+	}
+	System.out.println("Done printing the list");
+    }
+	
 }
