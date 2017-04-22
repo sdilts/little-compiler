@@ -14,7 +14,7 @@ public class Assign implements ITree {
 	} else if(expr == null) {
 	    expr = (MathExpression) child;
 	} else {
-	    System.err.println("Something's wrong");
+	    System.err.println("Something's wrong in assign");
 	}
     }
 

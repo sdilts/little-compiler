@@ -99,14 +99,42 @@ public class ParserListener extends LittleBaseListener {
 
     @Override
     public void enterPrimary(LittleParser.PrimaryContext ctx) {
+	
 	if(!ctx.getChild(0).getText().equals("(") ) {
-	    MathExpression temp = new MathExpression(ctx.getChild(0).getText());
+	    String name = ctx.getChild(0).getText();
+	    
+	    String type = getType(name);
+	    
+	    if(type.equals("id")){
+		if(!stack.isDefined(name)) {
+		    System.out.println("Declaration Error");
+		    System.exit(1);
+		    //throw new DeclarationException("Declaration Error");
+		}
+		type = stack.getType(name);
+		//System.err.println(name + "is of type" + 
+	    }
+	    
+	    MathExpression temp = new MathExpression(name, type);
 	    if(curTree == null) {
 		curTree = temp;
 	    } else {
 		curTree.addChild(temp);
 	    }
 	}
+    }
+
+    public String getType(String name) {
+	if(name == null) {
+	    return null;
+	}else if(Character.isLetter(name.charAt(0))) {
+	    return "id";
+	}else if(name.contains("\"")){
+	    return "STRING";
+	}else if(name.contains(".")){
+	    return "FLOAT";
+	}
+	return "INT";
     }
 
     @Override
@@ -161,6 +189,12 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void exitAssign_expr(LittleParser.Assign_exprContext ctx) { 
 	Assign asn = new Assign();
+	String toAsn = ctx.getChild(0).getText();
+	
+	if( !(stack.isDefined(toAsn) && stack.getType(toAsn).equals(((MathExpression) curTree).type)) ) {
+	    System.out.println("Declaration Error");
+	    System.exit(1);
+	}
 	asn.addChild(ctx.getChild(0).getText());
 	asn.addChild(curTree);
 	exprStack.push(asn);
