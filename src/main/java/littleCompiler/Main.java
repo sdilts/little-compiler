@@ -23,8 +23,11 @@ public class Main {
             for (int i = 0; i < args.length; i++) {
                 File f = new File(args[i]);
                 if (f.exists() && f.isFile()) {
-                    //System.out.printf("Compiling File %s\n", f.getName());
+		    System.out.println("-------------------------------------");
+                    System.out.printf("Compiling File: %s\n", f.getName());
+		    System.out.println("-------------------------------------");
                     compileFile(f);
+		    System.out.println();
                 } else {
                     System.out.printf("Filename %s is not a valid little file. Quiting.", args[i]);
                     break;
@@ -59,7 +62,7 @@ public class Main {
 
         } catch(ParseCancellationException e){
 	    System.out.println("Not accepted");
-	    //System.out.println(e.getMessage());
+	    System.out.println(e.getMessage());
 	} catch (IOException e) {
             System.out.println("File not found: " + e.getMessage());
         }
