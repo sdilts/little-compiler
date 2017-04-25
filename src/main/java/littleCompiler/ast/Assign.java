@@ -22,6 +22,11 @@ public class Assign implements ITree {
 	return expr != null && location != null;
     }
 
+    public void print() {
+	System.out.println(this);
+
+    }
+
     public String toString() {
 	return location + " = " + expr;
     }
