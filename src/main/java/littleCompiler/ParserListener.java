@@ -185,13 +185,18 @@ public class ParserListener extends LittleBaseListener {
 	
 	Assign asn = new Assign();
 	String toAsn = ctx.getChild(0).getText();
+	MathExpression eqn = (MathExpression) exprStack.pop();
 	
-	if( !(stack.isDefined(toAsn) && stack.getType(toAsn).equals(((MathExpression) curTree).type)) ) {
+	if( !stack.isDefined(toAsn)) {
 	    System.out.println("Declaration Error");
 	    System.exit(1);
 	}
+	if(!stack.getType(toAsn).equals(eqn.type)) {
+	    System.out.println("Type Mismatch");
+	    System.exit(1);
+	}
 	asn.addChild(ctx.getChild(0).getText());
-	asn.addChild(exprStack.pop());
+	asn.addChild(eqn);
 	exprStack.push(asn);
     }
 
