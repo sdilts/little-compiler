@@ -8,6 +8,8 @@ public class SymbolStack {
 
     private Deque<SymbolTable> stack;
     private Formatter printer;
+
+    private int registerCounter = 0;
     
     public SymbolStack() {
 	stack = new LinkedList<SymbolTable>();
@@ -23,7 +25,10 @@ public class SymbolStack {
     }
 
     public boolean exitScope() {
-	return stack.pop() != null;
+	SymbolTable rm = stack.pop();
+	registerCounter = registerCounter - rm.table.size();
+	//throws an exception if it doesn't work:
+	return true;
     }
 
     public boolean isDefined(String symbolName) {
@@ -56,16 +61,18 @@ public class SymbolStack {
     }
     
     public void addSymbol(String dataType, String symbolName, String value) throws DeclarationError {
-	if(stack.peek().insert(symbolName, dataType, value)) {
-	    printer.format("name %s type %s value %s\n", symbolName, dataType, value);
+	registerCounter++;
+	if(stack.peek().insert(symbolName, dataType, value, registerCounter)) {
+	    printer.format("name %s type %s value %s, location: %d\n", symbolName, dataType, value, registerCounter);
 	} else {
 	    throw new DeclarationError(symbolName);
 	}
     }
 
     public void addSymbol(String dataType, String symbolName) throws DeclarationError {
-	if(stack.peek().insert(symbolName, dataType)) {
-	    printer.format("name %s type %s\n", symbolName, dataType);
+	this.registerCounter++;
+	if(stack.peek().insert(symbolName, dataType, registerCounter)) {
+	    printer.format("name %s type %s, location: %d\n", symbolName, dataType, registerCounter);
 	} else {
 	    throw new DeclarationError(symbolName);
 	}
