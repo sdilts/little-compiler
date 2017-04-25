@@ -6,8 +6,8 @@ import java.util.Map;
 public class SymbolTable {
 
     String name;
-    Map<String,TableEntry> table;
-    private static int registerCounter = 1;
+    public Map<String,TableEntry> table;
+
     
     public SymbolTable(String name) {
 	this.name = name;
@@ -34,16 +34,16 @@ public class SymbolTable {
 	}
     }
 
-    public boolean insert(String name, String dataType) {
+    public boolean insert(String name, String dataType, int regNum) {
 	if(!isDefined(name)) {
-	    table.put(name, new TableEntry(name, dataType));
+	    table.put(name, new TableEntry(name, dataType, regNum));
 	    return true;
 	} else return false;
     }
 
-    public boolean insert(String name, String dataType, String value) {
+    public boolean insert(String name, String dataType, String value, int regNum) {
 	if(!isDefined(name)) {
-	    table.put(name, new ConstTableEntry(name, dataType, value));
+	    table.put(name, new ConstTableEntry(name, dataType, value, regNum));
 	    return true;
 	} else return false;
     }
@@ -66,14 +66,14 @@ public class SymbolTable {
 	//what it is refered to in the asm code:
 	public String location;
 	
-	public TableEntry(String name, String dataType) {
+	public TableEntry(String name, String dataType, int regNum) {
 	    this.name = name;
-	    this.location = name + registerCounter;
+	    this.location = "r" + Integer.toString(regNum);
 	    this.dataType = dataType;
 	}
 
 	public void prettyPrint(){
-	    System.out.printf("name %s type %s\n", name, dataType);
+	    System.out.printf("name %s type %s, location: %s\n", name, dataType, location);
 	}
 
 	public String getLocation() {
@@ -84,8 +84,8 @@ public class SymbolTable {
     public static class ConstTableEntry extends TableEntry {
 	public String value;
 
-	public ConstTableEntry(String name, String dataType, String value) {
-	    super(name, dataType);
+	public ConstTableEntry(String name, String dataType, String value, int regNum) {
+	    super(name, dataType, regNum);
 	    this.value = value;
 	}
 
