@@ -5,6 +5,7 @@ import littleCompiler.ast.*;
 
 import java.util.LinkedList;
 import java.util.Deque;
+import java.util.List;
 
 import org.antlr.v4.runtime.*;
 import antlr.main.*;
@@ -19,7 +20,7 @@ public class ParserListener extends LittleBaseListener {
 
     public Deque<ITree> exprStack = new LinkedList<ITree>();
     public Deque<MathExpression> mathStack = new LinkedList<MathExpression>();
-    
+
     public SymbolStack stack = new SymbolStack();
     
     private LittleParser parser;
@@ -102,23 +103,14 @@ public class ParserListener extends LittleBaseListener {
     public void enterPrimary(LittleParser.PrimaryContext ctx) {
 	if(!ctx.getChild(0).getText().equals("(") ) {
 	    MathExpression temp = new MathExpression(ctx.getChild(0).getText());
-	    System.out.println("var = " + temp);
 	    mathStack.push(temp);
 	}
-    }
-
-    @Override
-    public void exitPrimary(LittleParser.PrimaryContext ctx) {
-       // if(ctx.getChild(0).getText().equals("(") ) {
-       // 	    exitMathOperator();
-       // }
     }
 
     @Override
     public void enterFactor_prefix(LittleParser.Factor_prefixContext ctx) {
 	if(ctx.getChild(2) != null) {
 	    MathExpression temp = new MathExpression(ctx.getChild(2).getText());
-	    System.out.println("op = " + temp);
 	    mathStack.push(temp);
 
 	}
@@ -128,17 +120,9 @@ public class ParserListener extends LittleBaseListener {
     public void enterExpr_prefix(LittleParser.Expr_prefixContext ctx) {
 	if(ctx.getChild(2) != null) {
 	    MathExpression temp = new MathExpression(ctx.getChild(2).getText());
-	    System.out.println("op = " + temp);
 	    mathStack.push(temp);
 	}
     }
-
-    // @Override
-    // public void exitFactor_prefix(LittleParser.Factor_prefixContext ctx) {
-    // 	if(ctx.getChild(2) != null) {
-    // 	    exitMathOperator();
-    // 	}
-    // }
 
     private void printMath() {
 	for(MathExpression e : mathStack) {
@@ -151,28 +135,13 @@ public class ParserListener extends LittleBaseListener {
 	String parent = parser.ruleNames[ctx.getParent().getRuleIndex()];
 	if(!parent.equals("primary")) {
 	    Deque<MathExpression> varStack = new LinkedList<MathExpression>();
-	    System.out.println("Done with expr.");
-	    // while(mathStack.size() >= 3) {
-	    // 	MathExpression arg1 = mathStack.pop();
-	    // 	MathExpression arg2 = mathStack.pop();
-	    // 	MathExpression op = mathStack.pop();
-	    // 	op.addChild(arg2);
-	    // 	op.addChild(arg1);
-	    // 	mathStack.push(op);
-	    // }
-	    printMath();
 	    while(mathStack.size() > 1) {
 		while(mathStack.peekFirst().isFull()) {
 		    varStack.push(mathStack.pop());
 		}
-		System.out.println("varStack:");
-		for(MathExpression e : varStack) {
-		    System.out.println(e);
-		}
 		MathExpression op = mathStack.pop();
 		op.addChild(varStack.pop());
 		op.addChild(varStack.pop());
-		System.out.println("op = " + op);
 		mathStack.push(op);
 	    }
 		
@@ -183,13 +152,6 @@ public class ParserListener extends LittleBaseListener {
 	    }
 	}
     }
-    
-    // @Override
-    // public void exitExpr_prefix(LittleParser.Expr_prefixContext ctx) {
-    // 	if(ctx.getChild(2) != null) {
-    // 	    exitMathOperator();
-    // 	}
-    // }
 
     @Override
     public void exitAssign_expr(LittleParser.Assign_exprContext ctx) {
@@ -221,10 +183,36 @@ public class ParserListener extends LittleBaseListener {
 
     @Override
     public void enterWrite_stmt(LittleParser.Write_stmtContext ctx) {
+	List<String> ids = new LinkedList<String>();
+	String id = ctx.getChild(2).getChild(0).getText();
+	ids.add(id);
+
+	ParseTree curTail = ctx.getChild(2).getChild(1);
+
+	while(curTail.getChild(2) != null){
+	    id = curTail.getChild(1).getText();
+	    //System.out.println("ID: "+id);
+	    ids.add(id);
+	    curTail = curTail.getChild(2);
+	}
+	exprStack.push(new Write(ids));
     }
     
     @Override
     public void enterRead_stmt(LittleParser.Read_stmtContext ctx) {
+	List<String> ids = new LinkedList<String>();
+	String id = ctx.getChild(2).getChild(0).getText();
+	ids.add(id);
+
+	ParseTree curTail = ctx.getChild(2).getChild(1);
+
+	while(curTail.getChild(2) != null){
+	    id = curTail.getChild(1).getText();
+	    //System.out.println("ID: "+id);
+	    ids.add(id);
+	    curTail = curTail.getChild(2);
+	}
+	exprStack.push(new Read(ids));
     }
     
     @Override
@@ -233,6 +221,11 @@ public class ParserListener extends LittleBaseListener {
     }
 
 
+    @Override
+    public void exitCond(LittleParser.CondContext ctx) {
+	MathExpression second = (MathExpression) exprStack.pop();
+	exprStack.push(new Condition(exprStack.pop(), second, ctx.getChild(1).getText()));
+    }
     
     @Override
     public void enterIf_stmt(LittleParser.If_stmtContext ctx) {
@@ -242,6 +235,15 @@ public class ParserListener extends LittleBaseListener {
 
     @Override
     public void exitIf_stmt(LittleParser.If_stmtContext ctx) {
+	if(ctx.getChild(6).getChild(0) != null) {
+	    //get all of it:
+	    StmtList elsePart = (StmtList) exprStack.pop();
+	    StmtList ifPart = (StmtList) exprStack.pop();
+	    exprStack.push(new If(stack, (Condition) exprStack.pop(), ifPart, elsePart));
+	} else {
+	    StmtList ifPart = (StmtList) exprStack.pop();
+	    exprStack.push(new If(stack, (Condition) exprStack.pop(), ifPart));
+	}
 	stack.exitScope();
 
     }
@@ -250,10 +252,13 @@ public class ParserListener extends LittleBaseListener {
     public void enterWhile_stmt(LittleParser.While_stmtContext ctx) {
 	blockCounter++;
 	stack.enterScope("BLOCK " + blockCounter);
+	
     }
 
     @Override
     public void exitWhile_stmt(LittleParser.While_stmtContext ctx) {
+	StmtList bdy = (StmtList) exprStack.pop();
+	exprStack.push(new While(stack, (Condition) exprStack.pop(), bdy));
 	stack.exitScope();
     }
 
