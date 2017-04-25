@@ -4,9 +4,11 @@ public class MathExpression implements ITree {
     public String terminal;
     public MathExpression left;
     public MathExpression right;
+    public boolean isOperator;
 
     public MathExpression(String terminal) {
 	this.terminal = terminal;
+	isOperator = terminal.matches("\\+|\\*|/|-|%|");
     }
 
     public void addChild(Object child) {
@@ -21,7 +23,10 @@ public class MathExpression implements ITree {
     }
 
     public boolean isFull() {
-	return (left != null && right != null);
+	if(isOperator) {
+	    return (left != null && right != null);
+	} //else:
+	return true;
     }
 
     public void print() {
