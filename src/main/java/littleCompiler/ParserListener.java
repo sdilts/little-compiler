@@ -18,16 +18,16 @@ import org.antlr.v4.runtime.tree.*;
 public class ParserListener extends LittleBaseListener {
 
     public Deque<ITree> exprStack = new LinkedList<ITree>();
-    public ITree curTree;
+    public Deque<MathExpression> mathStack = new LinkedList<MathExpression>();
     
     public SymbolStack stack = new SymbolStack();
     
-    private Parser parser;
+    private LittleParser parser;
     
     public int blockCounter = 0;
 
     public ParserListener(Parser parser) {
-	this.parser = parser;
+	this.parser = (LittleParser) parser;
     }
     
     @Override
@@ -102,29 +102,25 @@ public class ParserListener extends LittleBaseListener {
     public void enterPrimary(LittleParser.PrimaryContext ctx) {
 	if(!ctx.getChild(0).getText().equals("(") ) {
 	    MathExpression temp = new MathExpression(ctx.getChild(0).getText());
-	    if(curTree == null) {
-		curTree = temp;
-	    } else {
-		curTree.addChild(temp);
-	    }
+	    System.out.println("var = " + temp);
+	    mathStack.push(temp);
 	}
     }
 
     @Override
     public void exitPrimary(LittleParser.PrimaryContext ctx) {
-       if(ctx.getChild(0).getText().equals("(") ) {
-	    exitMathOperator();
-       }
+       // if(ctx.getChild(0).getText().equals("(") ) {
+       // 	    exitMathOperator();
+       // }
     }
 
     @Override
     public void enterFactor_prefix(LittleParser.Factor_prefixContext ctx) {
 	if(ctx.getChild(2) != null) {
 	    MathExpression temp = new MathExpression(ctx.getChild(2).getText());
-	    if(curTree != null) {
-		exprStack.push(curTree);
-	    }
-	    curTree = temp;
+	    System.out.println("op = " + temp);
+	    mathStack.push(temp);
+
 	}
     }
 
@@ -132,51 +128,76 @@ public class ParserListener extends LittleBaseListener {
     public void enterExpr_prefix(LittleParser.Expr_prefixContext ctx) {
 	if(ctx.getChild(2) != null) {
 	    MathExpression temp = new MathExpression(ctx.getChild(2).getText());
-	    if(curTree != null) {
-		exprStack.push(curTree);
-	    }
-	    curTree = temp;
+	    System.out.println("op = " + temp);
+	    mathStack.push(temp);
 	}
     }
 
-    public void exitMathOperator() {
-	if(!exprStack.isEmpty() && curTree.isFull()) {
-	    ITree temp = exprStack.pop();
-	    temp.addChild(curTree);
-	    curTree = temp;
-	}
-    }
+    // @Override
+    // public void exitFactor_prefix(LittleParser.Factor_prefixContext ctx) {
+    // 	if(ctx.getChild(2) != null) {
+    // 	    exitMathOperator();
+    // 	}
+    // }
 
-    @Override
-    public void exitFactor_prefix(LittleParser.Factor_prefixContext ctx) {
-	if(ctx.getChild(2) != null) {
-	    exitMathOperator();
+    private void printMath() {
+	for(MathExpression e : mathStack) {
+	    System.out.println(e);
 	}
     }
 
     @Override
     public void exitExpr(LittleParser.ExprContext ctx) {
-	if(exprStack.peek() instanceof MathExpression) {
-	    exitMathOperator();
+	String parent = parser.ruleNames[ctx.getParent().getRuleIndex()];
+	if(!parent.equals("primary")) {
+	    Deque<MathExpression> varStack = new LinkedList<MathExpression>();
+	    System.out.println("Done with expr.");
+	    // while(mathStack.size() >= 3) {
+	    // 	MathExpression arg1 = mathStack.pop();
+	    // 	MathExpression arg2 = mathStack.pop();
+	    // 	MathExpression op = mathStack.pop();
+	    // 	op.addChild(arg2);
+	    // 	op.addChild(arg1);
+	    // 	mathStack.push(op);
+	    // }
+	    printMath();
+	    while(mathStack.size() > 1) {
+		while(mathStack.peekFirst().isFull()) {
+		    varStack.push(mathStack.pop());
+		}
+		System.out.println("varStack:");
+		for(MathExpression e : varStack) {
+		    System.out.println(e);
+		}
+		MathExpression op = mathStack.pop();
+		op.addChild(varStack.pop());
+		op.addChild(varStack.pop());
+		System.out.println("op = " + op);
+		mathStack.push(op);
+	    }
+		
+	    if(mathStack.size() > 1) {
+		System.out.println("there was a problem parsing the math");
+	    } else {
+		exprStack.push(mathStack.pop());
+	    }
 	}
-	
     }
     
-    @Override
-    public void exitExpr_prefix(LittleParser.Expr_prefixContext ctx) {
-	if(ctx.getChild(2) != null) {
-	    exitMathOperator();
-	}
-    }
+    // @Override
+    // public void exitExpr_prefix(LittleParser.Expr_prefixContext ctx) {
+    // 	if(ctx.getChild(2) != null) {
+    // 	    exitMathOperator();
+    // 	}
+    // }
 
     @Override
     public void exitAssign_expr(LittleParser.Assign_exprContext ctx) {
 	
 	Assign asn = new Assign();
 	asn.addChild(ctx.getChild(0).getText());
-	asn.addChild(curTree);
+	asn.addChild(exprStack.pop());
 	exprStack.push(asn);
-	curTree = null;
     }
 
     @Override
