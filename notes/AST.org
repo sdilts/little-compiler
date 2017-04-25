@@ -145,3 +145,39 @@
    	  JMP T1 T2 LABEL
    #+END_SRC
 # ** functions
+* UML
+  #+BEGIN_SRC plantuml :file ast.png
+    interface IStmt {
+  	    StringBuilder flatten(SymbolStack symbols)
+    }
+
+    interface IReturnable {
+  	    StringBuilder flatten(SymbolStack symbols, String saveLocation);
+    }
+
+    interface ITree {
+  	    void addChild(Object child)
+  	    boolean isFull()
+  	    void print()
+    }
+
+    class While
+    class If
+    class Assign
+    class Condition
+    class StmtList
+    class MathExpression
+    class Read
+    class Write
+
+
+    ITree <|-- IStmt
+    ITree <|-- IReturnable
+
+    IStmt <|.. While
+    IStmt <|.. If
+    IStmt <|.. Assign
+    IStmt <|.. StmtList
+    IStmt <|.. Read
+    IStmt <|.. Writex
+  #+END_SRC

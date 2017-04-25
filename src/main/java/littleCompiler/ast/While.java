@@ -5,11 +5,10 @@ import symbolTable.*;
 
 public class While implements IStmt {
 
-    SymbolStack symbols;
     StmtList body;
     Condition cond;
     
-    public While(SymbolStack symbols, Condition con, StmtList body) {
+    public While(Condition con, StmtList body) {
 	this.cond = con;
 	this.body = body;
 	this.symbols = symbols;

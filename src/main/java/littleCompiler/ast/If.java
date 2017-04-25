@@ -1,10 +1,9 @@
-package littleCompiler.ast;
+xpackage littleCompiler.ast;
 
 import symbolTable.*;
 
 public class If implements IStmt {
 
-    SymbolStack symbols;
     Condition cond;
     StmtList trueBody;
     StmtList falseBody;
@@ -50,8 +49,4 @@ public class If implements IStmt {
 	System.out.println("If.flatten() does nothing yet");
 	return new StringBuilder();
     }
-
 }
-
-
-    
