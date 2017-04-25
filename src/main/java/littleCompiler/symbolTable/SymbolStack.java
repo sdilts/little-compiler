@@ -35,6 +35,17 @@ public class SymbolStack {
 	return false;
     }
 
+    public String getType(String symbolName) {
+	for(SymbolTable s : stack) {
+	    String t = s.getType(symbolName);
+	    if(t != null) {
+		return t;
+	    }
+	}
+	System.err.println("Could not determine the type of " + symbolName);
+	return null;
+    }
+
     public String getLocation(String varName) throws OutOfScopeException {
 	for(SymbolTable s : stack) {
 	    if(s.isDefined(varName)) {

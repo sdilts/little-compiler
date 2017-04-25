@@ -18,6 +18,12 @@ public class SymbolTable {
 	return table.containsKey(name);
     }
 
+    public String getType(String name) {
+	if(isDefined(name)) {
+	    return table.get(name).dataType;
+	} else return null;
+    }
+
     public String getSymbolLocation(String varName) {
 	if(isDefined(varName)) {
 
