@@ -3,7 +3,7 @@ package littleCompiler.ast;
 import symbolTable.*;
 
 
-public class While implements ITree {
+public class While implements IStmt {
 
     SymbolStack symbols;
     StmtList body;
@@ -30,6 +30,11 @@ public class While implements ITree {
 
     public void addChild(Object child) {
 	System.err.println("Not supposed to be calling addChild on While");
+    }
+
+    public StringBuilder flatten(SymbolStack symbols) {
+	System.out.println("While.flatten() does nothing yet");
+	return new StringBuilder();
     }
 
 }

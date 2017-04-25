@@ -1,6 +1,8 @@
 package littleCompiler.ast;
 
-public class Assign implements ITree {
+import symbolTable.SymbolStack;
+
+public class Assign implements IStmt {
     public MathExpression expr;
     public String location;
 
@@ -29,5 +31,10 @@ public class Assign implements ITree {
 
     public String toString() {
 	return location + " = " + expr;
+    }
+
+    public StringBuilder flatten(SymbolStack symbols) {
+	System.out.println("Assign.flatten() does nothing yet");
+	return new StringBuilder();
     }
 }
