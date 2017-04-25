@@ -2,7 +2,7 @@ package littleCompiler.ast;
 
 import symbolTable.*;
 
-public class If implements ITree {
+public class If implements IStmt {
 
     SymbolStack symbols;
     Condition cond;
@@ -44,6 +44,11 @@ public class If implements ITree {
 
     public void addChild(Object child) {
 	System.err.println("Not supposed to be calling addChild on While");
+    }
+
+    public StringBuilder flatten(SymbolStack symbols) {
+	System.out.println("If.flatten() does nothing yet");
+	return new StringBuilder();
     }
 
 }

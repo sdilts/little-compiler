@@ -1,6 +1,8 @@
 package littleCompiler.ast;
 
-public class MathExpression implements ITree {
+import symbolTable.SymbolStack;
+
+public class MathExpression implements IReturnable {
     public String terminal;
     public String type;
     public MathExpression left;
@@ -38,7 +40,6 @@ public class MathExpression implements ITree {
 	    System.err.println("Bad Mismatched type: " + e.type + " and " + this.type);
 	    System.exit(1);
 	}
-
     }
 
     public boolean isFull() {
@@ -50,6 +51,17 @@ public class MathExpression implements ITree {
 
     public void print() {
 	System.out.println(this);
+    }
+
+    @Override
+    public StringBuilder flatten(SymbolStack symbols, String saveLocation) {
+	System.out.println("MathExpression.flatten() does nothing yet");
+	return new StringBuilder();
+    }
+
+    @Override
+    public String getReturnType() {
+	return type;
     }
 
     @Override
