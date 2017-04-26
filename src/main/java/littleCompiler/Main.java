@@ -58,7 +58,7 @@ public class Main {
 	    (new ParseTreeWalker()).walk(listener, parser.program());
 
 	    
-	    //listener.stack.prettyPrint();
+	    listener.stack.prettyPrint();
 
         } catch(ParseCancellationException e){
 	    System.out.println("Not accepted");

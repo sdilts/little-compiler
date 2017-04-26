@@ -1,11 +1,10 @@
 package littleCompiler.ast;
 
-import symbolTable.SymbolStack;
+import symbolTable.*;
 
 public class Assign implements IStmt {
     public MathExpression expr;
     public String location;
-
 
     /**
      * id first, then expression
@@ -34,7 +33,12 @@ public class Assign implements IStmt {
     }
 
     public StringBuilder flatten(SymbolStack symbols) {
-	System.out.println("Assign.flatten() does nothing yet");
-	return new StringBuilder();
+	try {
+	    return expr.flatten(symbols, symbols.getLocation(location));
+	} catch(OutOfScopeException e) {
+	    System.out.println(e.getMessage());
+	    System.exit(1);
+	    return null;
+	}
     }
 }

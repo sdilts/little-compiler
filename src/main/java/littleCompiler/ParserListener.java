@@ -209,7 +209,7 @@ public class ParserListener extends LittleBaseListener {
 	if(ctx.getChild(0) != null) {
 	    ITree lst = null;
 	    if(!(exprStack.peek() instanceof StmtList)) {
-		lst = new StmtList();
+		lst = new StmtList(SymbolStack.copy(stack));
 	    } else {
 		lst = exprStack.pop();
 	    }
@@ -277,10 +277,10 @@ public class ParserListener extends LittleBaseListener {
 	    //get all of it:
 	    StmtList elsePart = (StmtList) exprStack.pop();
 	    StmtList ifPart = (StmtList) exprStack.pop();
-	    exprStack.push(new If(stack, (Condition) exprStack.pop(), ifPart, elsePart));
+	    exprStack.push(new If((Condition) exprStack.pop(), ifPart, elsePart));
 	} else {
 	    StmtList ifPart = (StmtList) exprStack.pop();
-	    exprStack.push(new If(stack, (Condition) exprStack.pop(), ifPart));
+	    exprStack.push(new If((Condition) exprStack.pop(), ifPart));
 	}
 	stack.exitScope();
 
@@ -296,7 +296,7 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void exitWhile_stmt(LittleParser.While_stmtContext ctx) {
 	StmtList bdy = (StmtList) exprStack.pop();
-	exprStack.push(new While(stack, (Condition) exprStack.pop(), bdy));
+	exprStack.push(new While((Condition) exprStack.pop(), bdy));
 	stack.exitScope();
     }
 
@@ -325,6 +325,8 @@ public class ParserListener extends LittleBaseListener {
     @Override
     public void exitProgram(LittleParser.ProgramContext ctx) {
     	stack.exitScope();
-	printStack();
+	StmtList lst = (StmtList) exprStack.pop();
+	System.out.println(lst.flatten());
+	//printStack();
     }
 }
