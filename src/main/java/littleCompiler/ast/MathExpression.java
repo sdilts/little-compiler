@@ -53,10 +53,13 @@ public class MathExpression implements IReturnable {
 	System.out.println(this);
     }
 
+    /**
+     * Save location is the name of a register
+     **/
     @Override
     public StringBuilder flatten(SymbolStack symbols, String saveLocation) {
 	System.out.println("MathExpression.flatten() does nothing yet");
-	return new StringBuilder();
+	return (new StringBuilder()).append("Some mathy stuff\n");
     }
 
     @Override

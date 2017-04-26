@@ -5,11 +5,13 @@ import symbolTable.SymbolStack;
 import java.util.LinkedList;
 import java.util.Deque;
 
-public class StmtList implements IStmt {
+public class StmtList implements ITree {
     private Deque<IStmt> stmts;
+    private SymbolStack symbols;
 
-    public StmtList() {
-	stmts = new <IStmt>LinkedList();
+    public StmtList(SymbolStack tbl) {
+	stmts = new LinkedList<IStmt>();
+	symbols = tbl;
     }
 
     public boolean isFull() {
@@ -28,7 +30,7 @@ public class StmtList implements IStmt {
 	System.out.println("Done printing the list");
     }
 
-    public StringBuilder flatten(SymbolStack symbols) {
+    public StringBuilder flatten() {
 	StringBuilder addTo = new StringBuilder();
 	for(IStmt t : stmts) {
 	    addTo.append(t.flatten(symbols));

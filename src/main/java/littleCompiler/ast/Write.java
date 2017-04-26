@@ -33,8 +33,7 @@ public class Write implements IStmt {
     public StringBuilder flatten(SymbolStack symbols) {
 	StringBuilder addTo = new StringBuilder();
 	for(String i : args) {
-	    String command = getPrintCommand(symbols.getType(i)) + " " + i;
-	    System.out.println("Generated command: " + command);
+	    String command = getPrintCommand(symbols.getType(i)) + " " + i + "\n";
 	    addTo.append(command);
 	}
 	return addTo;

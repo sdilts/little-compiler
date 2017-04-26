@@ -10,10 +10,23 @@ public class SymbolStack {
     private Formatter printer;
 
     private int registerCounter = 0;
+
+    public static SymbolStack copy(SymbolStack stack) {
+	Deque<SymbolTable> toAdd = new LinkedList<SymbolTable>();
+	for(SymbolTable t : stack.stack) {
+	    toAdd.push(t);
+	}
+	return new SymbolStack(toAdd, stack.registerCounter);
+    }
     
     public SymbolStack() {
 	stack = new LinkedList<SymbolTable>();
 	printer = new Formatter(new StringBuilder());
+    }
+
+    private SymbolStack(Deque<SymbolTable> tbl, int  registerCounter) {
+	stack = tbl;
+	this.registerCounter = registerCounter;
     }
 
     public void enterScope(String name) {

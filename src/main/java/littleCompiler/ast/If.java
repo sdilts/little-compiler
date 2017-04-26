@@ -1,4 +1,4 @@
-xpackage littleCompiler.ast;
+package littleCompiler.ast;
 
 import symbolTable.*;
 
@@ -8,15 +8,15 @@ public class If implements IStmt {
     StmtList trueBody;
     StmtList falseBody;
 
-    public If(SymbolStack stack, Condition cond, StmtList trueBody, StmtList falseBody) {
-	this.symbols = stack;
+    static int blockCount;
+
+    public If(Condition cond, StmtList trueBody, StmtList falseBody) {
 	this.cond = cond;
 	this.trueBody = trueBody;
 	this.falseBody = falseBody;
     }
 
-    public If(SymbolStack stack, Condition cond, StmtList trueBody) {
-	this.symbols = stack;
+    public If(Condition cond, StmtList trueBody) {
 	this.cond = cond;
 	this.trueBody = trueBody;
 	this.falseBody = null;
@@ -46,7 +46,30 @@ public class If implements IStmt {
     }
 
     public StringBuilder flatten(SymbolStack symbols) {
-	System.out.println("If.flatten() does nothing yet");
-	return new StringBuilder();
+	blockCount++;
+	StringBuilder addTo = new StringBuilder();
+	String endLabel = "IFEND" + Integer.toString(blockCount);
+	if(falseBody != null) {
+	    String elseLabel = "ELSE" + Integer.toString(blockCount);
+	    //get the condition, reverse the condition:
+	    addTo.append(cond.flatten(symbols, elseLabel, true));
+	    //fall through to the if part:
+	    addTo.append(trueBody.flatten());
+	    //skip the else part:
+	    addTo.append("jmp " + endLabel + "\n");
+	    //add else label:
+	    addTo.append("label " + elseLabel + "\n");
+	    //do the else part:
+	    addTo.append(falseBody.flatten());
+	    //add the end label:
+	    addTo.append("label " + endLabel + "\n");
+	} else {
+	    //get the condition, reverse the condition:
+	    addTo.append(cond.flatten(symbols, endLabel, true));
+	    //fall through to the if part:
+	    addTo.append(trueBody.flatten());
+	    addTo.append("label " + endLabel + "\n");
+	}
+	return addTo;
     }
 }

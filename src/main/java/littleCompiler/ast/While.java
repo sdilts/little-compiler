@@ -7,11 +7,12 @@ public class While implements IStmt {
 
     StmtList body;
     Condition cond;
+
+    private static int blockCount = 0;
     
     public While(Condition con, StmtList body) {
 	this.cond = con;
 	this.body = body;
-	this.symbols = symbols;
     }
 
     
@@ -32,8 +33,16 @@ public class While implements IStmt {
     }
 
     public StringBuilder flatten(SymbolStack symbols) {
-	System.out.println("While.flatten() does nothing yet");
-	return new StringBuilder();
+	blockCount++;
+	//System.out.println("While.flatten() does nothing yet");
+	StringBuilder addTo = new StringBuilder();
+	String jmpLabel = "WHILE" + Integer.toString(blockCount);
+	addTo.append("label " + jmpLabel + "\n");
+	//reverse the condition: "skip" if statement is false:
+	addTo.append(cond.flatten(symbols, "WEND" + Integer.toString(blockCount), true));
+	addTo.append(body.flatten());
+	addTo.append("jmp " + jmpLabel + "\n");
+	addTo.append("label WEND" + Integer.toString(blockCount) + "\n");
+	return addTo;
     }
-
 }
