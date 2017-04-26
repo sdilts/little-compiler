@@ -104,41 +104,48 @@ public class MathExpression implements IReturnable {
 	}
     }
 
+    private String buildInstruction(String instr, String arg1, String arg2, String dest) {
+	return instr + " " + arg1 + " " + arg2 + " " + dest + "\n";
+
+    }
+
     private static int tempCount = 0;
 
     private void dispatcher(StringBuilder bldr, SymbolStack symbols, String saveLocation) throws OutOfScopeException {
 	if(this.isOperator) {
-	    System.out.println(this);
-	    //we can re-use our temp val for one of the values
-	    if(left.isOperator && !right.isOperator) {
-		System.out.println("only right terminal");
-		//compute one side:
-		left.dispatcher(bldr,symbols,saveLocation);
-		//add them both together:
-		bldr.append(getOpString() + " " + saveLocation + " " + getTerminalName(symbols,right.terminal) + "\n");
-	    } else if(right.isOperator && !left.isOperator) {
-		System.out.println("only left terminal");
-		//compute one side:
-		right.dispatcher(bldr,symbols,saveLocation);
-		//add them both together:
-		bldr.append(getOpString() + " " + getTerminalName(symbols, left.terminal) + " " + saveLocation + "\n");
-	    } else if(right.isOperator && left.isOperator) {
-		System.out.println("none terminal");
-		//both are operators:
-		//use our temp for one:
-		left.dispatcher(bldr,symbols,saveLocation);
-		//summon another temp for the other:
+	    if(!right.isOperator && !left.isOperator) {
+		//neither are operators:
+		bldr.append(buildInstruction(getOpString(), getTerminalName(symbols, left.terminal),
+					     getTerminalName(symbols,right.terminal),
+					     saveLocation));
+	    } else {
 		tempCount++;
 		String tempLoc = "TMath" + Integer.toString(tempCount);
+		if(left.isOperator && !right.isOperator) {
+		    //compute one side:
+		    left.dispatcher(bldr,symbols,tempLoc);
+		    //add them both together:
+		    bldr.append(buildInstruction(getOpString(),tempLoc,getTerminalName(symbols,right.terminal),
+						 saveLocation));
+		} else if(right.isOperator && !left.isOperator) {
+		    //compute one side:
+		    right.dispatcher(bldr,symbols,tempLoc);
+		    //add them both together:
+		    bldr.append(buildInstruction(getOpString(),getTerminalName(symbols, left.terminal),tempLoc,
+						 saveLocation));
+		} else if(right.isOperator && left.isOperator) {
+		    tempCount++;
+		    String tempLoc2 = "TMath" + Integer.toString(tempCount);
 
-		right.dispatcher(bldr,symbols,tempLoc);
+		    left.dispatcher(bldr,symbols,tempLoc2);
+		    //summon another temp for the other:
+		    right.dispatcher(bldr,symbols,tempLoc);
 		
-		bldr.append(getOpString() + " " + saveLocation + " " + tempLoc + "\n");
+		    bldr.append(buildInstruction(getOpString(), tempLoc, tempLoc2,
+						 saveLocation));
+		    tempCount--;
+		}
 		tempCount--;
-	    } else {
-		System.out.println("both terminal");
-		//neither are operators:
-		bldr.append(getOpString() + " " + getTerminalName(symbols, left.terminal) + " " + getTerminalName(symbols,right.terminal) + "\n");
 	    }
 	} else {
 	    System.err.println("A terminal snuck into the dispatcher");
@@ -156,12 +163,7 @@ public class MathExpression implements IReturnable {
 	    StringBuilder add = new StringBuilder();
 	    //simple assignment:
 	    if(!isOperator) {
-		String type = getType(terminal);
-		if(type.equals("id")) {
-		    add.append("move " + symbols.getLocation(terminal) + " " + saveLocation + "\n");
-		} else {
-		    add.append("move " + terminal + " " + saveLocation + "\n");
-		}
+		add.append("move " + getTerminalName(symbols,terminal) + " " + saveLocation + "\n");
 	    } else {
 		//actually have to do math:
 		this.dispatcher(add,symbols,saveLocation);
