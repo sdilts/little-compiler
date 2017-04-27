@@ -24,11 +24,20 @@ public class ParserListener extends LittleBaseListener {
     public SymbolStack stack = new SymbolStack();
     
     private LittleParser parser;
+    private String ir;
     
-    public int blockCounter = 0;
+    private int blockCounter = 0;
 
     public ParserListener(Parser parser) {
 	this.parser = (LittleParser) parser;
+    }
+
+    public String getIR() {
+	if(ir == null) {
+	    //throw error
+	    return null;
+	} else return ir;
+
     }
     
     @Override
@@ -326,7 +335,6 @@ public class ParserListener extends LittleBaseListener {
     public void exitProgram(LittleParser.ProgramContext ctx) {
     	stack.exitScope();
 	StmtList lst = (StmtList) exprStack.pop();
-	System.out.println(lst.flatten());
-	//printStack();
+	ir = lst.flatten().toString();
     }
 }

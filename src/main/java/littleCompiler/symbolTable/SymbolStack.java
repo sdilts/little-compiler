@@ -91,6 +91,17 @@ public class SymbolStack {
 	}
     }
 
+    public String getValue(String varName) {
+	for(SymbolTable s : stack) {
+	    String val = s.getValue(varName);
+	    if(val != null) {
+		return val;
+	    }
+	}
+	System.err.println("Could not determine the type of " + symbolName);
+	return null;
+    }
+
     public void prettyPrint() {
 	System.out.print(printer.out());
     }

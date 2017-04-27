@@ -52,6 +52,20 @@ public class SymbolTable {
 	return name;
     }
 
+    public String getValue(String varName) {
+	if(!isDefined(varName)) {
+	    TableEntry t = table.get(varName);
+	    if(t instanceof ConstTableEntry) {
+		return t.value;
+	    } else {
+		System.err.println(varName + " is not a constant");
+		return null;
+	    }
+	} else {
+	    return null;
+	}
+    }
+
     public void prettyPrint(){
 	System.out.println("Symbol table " + name);
 	for(TableEntry entry : table.values()){

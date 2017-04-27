@@ -23,11 +23,11 @@ public class Main {
             for (int i = 0; i < args.length; i++) {
                 File f = new File(args[i]);
                 if (f.exists() && f.isFile()) {
-		    System.out.println("-------------------------------------");
-                    System.out.printf("Compiling File: %s\n", f.getName());
-		    System.out.println("-------------------------------------");
+		    //System.out.println("-------------------------------------");
+                    //System.out.printf("Compiling File: %s\n", f.getName());
+		    //System.out.println("-------------------------------------");
                     compileFile(f);
-		    System.out.println();
+		    //System.out.println();
                 } else {
                     System.out.printf("Filename %s is not a valid little file. Quiting.", args[i]);
                     break;
@@ -57,8 +57,11 @@ public class Main {
 	    //System.out.println(TreeUtils.printTree(parser.program(), parser));
 	    (new ParseTreeWalker()).walk(listener, parser.program());
 
+	    String ir = listener.getIR();
+	    System.out.println(ASMGenerator.commentString(ir));
+	    System.out.println(ASMGenerator.toASM(ir));
 	    
-	    listener.stack.prettyPrint();
+	    //listener.stack.prettyPrint();
 
         } catch(ParseCancellationException e){
 	    System.out.println("Not accepted");
