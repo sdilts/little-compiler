@@ -48,6 +48,9 @@ public class Write implements IStmt {
     private String getTerminalName(SymbolStack stack, String name) throws OutOfScopeException {
 	String type = getType(name);
 	if(type.equals("id")) {
+	    if(stack.getType(name).equals("STRING")) {
+		return name;
+	    }
 	    return stack.getLocation(name);
 	} else {
 	    return name;

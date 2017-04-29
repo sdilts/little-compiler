@@ -5,6 +5,7 @@ import symbolTable.*;
 
 public class While implements IStmt {
 
+    StringDecl decls;
     StmtList body;
     Condition cond;
 

@@ -1,11 +1,14 @@
 package littleCompiler.ast;
 
+import symbolTable.*;
+import java.util.List;
+
 public class StringDecl implements IStmt {
 
     private String varName;
 
     public StringDecl(String varName) {
-	this.value = toDeclare;
+	this.varName = varName;
     }
     
     public void addChild(Object child) {
@@ -17,11 +20,11 @@ public class StringDecl implements IStmt {
     }
     
     public void print() {
-	System.out.println("STRING " + value);
+	System.out.println("STRING " + varName);
     }
 
-    public String flatten(SymbolTable symbols) {
-	return "str " + varName + " " + symbols.getValue(varName) + "\n";
+    public StringBuilder flatten(SymbolStack symbols) {
+	return new StringBuilder("str " + varName + " " + symbols.getValue(varName) + "\n");
     }
 
 }

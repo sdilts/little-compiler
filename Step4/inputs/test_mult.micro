@@ -9,11 +9,11 @@ BEGIN
 		a := 1;
 		b := 2;
 
-	 	--READ(c, d);
+          READ(c, d);
 
           e := a * c + b * d;
           
-	  --WRITE(c, newline, d, newline, e, newline);
+          WRITE(c, newline, d, newline, e, newline);
 
 	END	
 END

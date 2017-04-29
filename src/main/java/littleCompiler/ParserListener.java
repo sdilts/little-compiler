@@ -333,8 +333,18 @@ public class ParserListener extends LittleBaseListener {
 
     @Override
     public void exitProgram(LittleParser.ProgramContext ctx) {
-    	stack.exitScope();
 	StmtList lst = (StmtList) exprStack.pop();
-	ir = lst.flatten().toString();
+	ParseTree p = ctx.getChild(3).getChild(0);
+	List<StringDecl> varNames = new LinkedList();
+	while(p != null) {
+	    ParseTree itm = p.getChild(0);
+	    if(itm != null && itm.getText().contains("STRING")) {
+		varNames.add(new StringDecl(itm.getChild(1).getText()));
+	    }
+	    p = p.getChild(1);
+	}
+	Program pgm = new Program(lst, varNames);
+	ir = pgm.flatten(stack).toString();
+	stack.exitScope();
     }
 }

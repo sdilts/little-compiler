@@ -98,7 +98,7 @@ public class SymbolStack {
 		return val;
 	    }
 	}
-	System.err.println("Could not determine the type of " + symbolName);
+	System.err.println("Could not determine the type of " + varName);
 	return null;
     }
 

@@ -59,7 +59,6 @@ public class Read implements IStmt {
 	try {
 	    for(String i : args) {
 		String command = getReadCommand(symbols.getType(i)) + " " + getTerminalName(symbols, i) + "\n";
-		System.out.println("Generated command: " + command);
 		addTo.append(command);
 	    }
 	} catch (OutOfScopeException e) {

@@ -141,7 +141,7 @@ public class MathExpression implements IReturnable {
 		    //summon another temp for the other:
 		    right.dispatcher(bldr,symbols,tempLoc);
 		
-		    bldr.append(buildInstruction(getOpString(), tempLoc, tempLoc2,
+		    bldr.append(buildInstruction(getOpString(), tempLoc2, tempLoc,
 						 saveLocation));
 		    tempCount--;
 		}
