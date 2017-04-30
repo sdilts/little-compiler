@@ -1,0 +1,78 @@
+* SymbolStack
+  #+BEGIN_SRC plantuml :file uml/SymbolStack.png
+    class SymbolTable {
+  	String name;
+  	Map<String,TableEntry> table;
+    }
+
+    class TableEntry {
+  	String name;
+  	String dataType
+  	String location
+    }
+
+    class ConstTableEntry {
+  	String name;
+  	String dataType
+  	String location
+  	String value
+    }
+
+    class SymbolStack {
+  	Deque<SymbolTable> stack;
+  	int registerCounter
+    }
+
+    SymbolStack "1"  *-- "*" SymbolTable
+
+    SymbolTable "1" *-- "*" TableEntry
+    SymbolTable "1" *-- "*" ConstTableEntry
+
+    TableEntry  --|> ConstTableEntry
+  #+END_SRC
+* AST
+  #+BEGIN_SRC plantuml :file uml/ast.png
+    interface IStmt {
+    	  StringBuilder flatten(SymbolStack symbols)
+    }
+
+    interface ITree {
+    	  void addChild(Object child)
+    	  boolean isFull()
+    	  void print()
+    }
+
+    class Program
+    class While
+    class If
+    class Condition
+    class StmtList
+    class MathExpression
+    class Assign
+    class Read
+    class Write
+
+
+
+    Program --|> StmtList
+    Program "1" --|> "*" StringDecl
+    ITree <|-- IStmt
+    ITree <|.. StmtList
+
+    IStmt <|.. If
+    IStmt <|.. While
+    StmtList --|> IStmt
+
+    Assign --|> MathExpression
+
+    While --|>  StmtList
+    While --|> Condition
+    If --|> StmtList
+    If --|> Condition
+
+    Condition --|> MathExpression
+ 
+    IStmt <|.. Assign
+    IStmt <|.. Read
+    IStmt <|.. Write
+  #+END_SRC
